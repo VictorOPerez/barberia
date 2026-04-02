@@ -136,15 +136,15 @@ export default function BookingScheduleStep({
     const calendarDays = Array.from({ length: 30 }, (_, i) => i + 1);
 
     return (
-        <section className={`${inter.variable} ${marker.variable} relative min-h-[100dvh] bg-[#121212] text-white overflow-x-hidden`}>
+        <section className={`${inter.variable} ${marker.variable} relative h-[100dvh] bg-[#121212] text-white overflow-hidden flex flex-col`}>
             {/* Efectos de fondo */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,87,34,0.12),transparent_40%),linear-gradient(180deg,#0f0f0f_0%,#121212_100%)] pointer-events-none" />
 
             {/* Contenedor Principal: Ajustado el pb-[130px] para un leve scroll exacto */}
-            <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col px-4 pt-2 ">
+            <div className="relative mx-auto flex h-[calc(100dvh-140px)] w-full max-w-[430px] flex-col justify-evenly px-4 pt-2 ">
 
                 {/* Navbar (Con mt-4 para bajar un poco la flecha y el logo) */}
-                <div className="flex items-center justify-between mt-4 mb-6">
+                <div className="flex items-center justify-between ">
                     <button
                         onClick={onBack}
                         className="flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.04] text-white/80 transition hover:bg-white/10"
@@ -166,7 +166,7 @@ export default function BookingScheduleStep({
 
 
                 {/* 1. Selector de Día */}
-                <div className="mb-8">
+                <div className="">
                     <div className="mb-3 flex items-center justify-between">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/40">
                             1. Elige el día
@@ -207,7 +207,7 @@ export default function BookingScheduleStep({
                 </div>
 
                 {/* 2. Selector de Barberos (Grid de Avatares) */}
-                <div className="mb-8">
+                <div className="">
                     <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/40">
                         2. Elige tu barbero
                     </p>
@@ -247,7 +247,7 @@ export default function BookingScheduleStep({
 
                 {/* 3. Panel de Horas Horizontal */}
                 <div>
-                    <div className="mb-4 flex items-center justify-between uppercase tracking-[0.1em]">
+                    <div className=" flex items-center justify-between uppercase tracking-[0.1em] mb-3">
                         <p className={`text-[11px] font-bold ${hasAvailableHours ? 'text-white/40' : 'text-white/40'}`}>
                             {hasAvailableHours ? 'Horarios disponibles' : 'No queda más horario disponible'}
                         </p>
