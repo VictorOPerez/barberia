@@ -12,10 +12,10 @@ const marker = Permanent_Marker({ weight: '400', subsets: ['latin'], variable: '
 export default function BarberHero() {
   return (
     // Contenedor principal con h-screen y overflow-hidden
-    <section className={`${inter.variable} ${marker.variable} relative h-screen w-full overflow-hidden bg-[#121212] text-white flex flex-col`}>
+    <section className={`${inter.variable} ${marker.variable} relative  min-h-[100dvh] w-full overflow-hidden bg-[#121212] text-white flex flex-col`}>
 
       {/* 1. SECCIÓN VIDEO: Cambiamos shrink-0 por una altura definida */}
-      <div className="relative w-full h-[43vh] sm:h-[75vh] overflow-hidden leading-[0] shrink-0 z-0">
+      <div className="relative w-full h-[35dvh] sm:h-[75vh] overflow-hidden leading-[0] shrink-0 z-0">
         <video
           src="/hero/logo.mp4"
           autoPlay loop muted playsInline
