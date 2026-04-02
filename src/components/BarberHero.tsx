@@ -23,12 +23,10 @@ export default function BarberHero() {
           className="w-full h-full object-cover block"
         />
         {/* Degradado para fusionar */}
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#121212] via-[#121212]/50 to-transparent" />
-      </div>
 
+      </div>
       {/* 2. SECCIÓN CONTENIDO PRINCIPAL Y CAPA DE EFECTOS */}
       <div className="relative flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
-
         {/* ============================================================================================= */}
         {/* CAPA DE EFECTOS COMPUESTA (Imagen de fondo + Gradiente + Blurs Naranjas por encima) */}
         {/* ============================================================================================= */}
@@ -36,7 +34,7 @@ export default function BarberHero() {
 
           {/* A. La Imagen de Recorte: Ahora es la base de esta capa */}
           {/* fill asegura que ocupe todo el espacio. Controlamos opacidad aquí con opacity-20 */}
-          <div className="absolute inset-0 z-0 opacity-20">
+          <div className="absolute inset-0 z-0 opacity-35">
             <Image
               src="/hero/hero-recorte.png"
               alt="Textura de fondo barbería"
@@ -48,7 +46,7 @@ export default function BarberHero() {
 
           {/* B. Gradiente de superposición: Para oscurecer la imagen y fusionar */}
           <div
-            className="absolute inset-0 z-10 opacity-60"
+            className="absolute inset-0 z-10 opacity-50"
             style={{
               backgroundImage: 'linear-gradient(180deg, rgba(18,18,18,0) 0%, rgba(18,18,18,1) 100%)',
             }}
@@ -59,7 +57,7 @@ export default function BarberHero() {
           <div className="absolute bottom-[-50px] right-[-100px] h-96 w-96 rounded-full bg-[#FF5722]/15 blur-3xl z-20" />
 
           {/* Opcional: Un destello sutil radial en el centro para dar más profundidad sobre la imagen */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,87,34,0.08),transparent_70%)] z-15" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,87,34,0.08),transparent_50%)] z-15" />
         </div>
         {/* ============================================================================================= */}
 
