@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Clock3, Scissors, CalendarDays, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Inter, Permanent_Marker } from 'next/font/google';
-import { useRouter } from 'next/navigation'; // 1. Importas el hook
+import { useRouter } from 'next/navigation';
+
 const inter = Inter({
     subsets: ['latin'],
     variable: '--font-inter',
@@ -23,13 +24,36 @@ type DayItem = { id: string; short: string; date: string; full: string };
 
 const defaultCut: SelectedCut = { name: 'Pompadour', price: 40, duration: '45 min' };
 
-const days: DayItem[] = [
-    { id: 'today', short: 'HOY', date: '12', full: 'Hoy · Jue 12' },
-    { id: 'tomorrow', short: 'MAÑ', date: '13', full: 'Mañana · Vie 13' },
-    { id: 'sat14', short: 'SÁB', date: '14', full: 'Sábado 14' },
-    { id: 'sun15', short: 'DOM', date: '15', full: 'Domingo 15' },
-    { id: 'mon16', short: 'LUN', date: '16', full: 'Lunes 16' },
-];
+// La función ahora solo genera, ya no la llamamos suelta afuera
+const generateDays = (numDays: number): DayItem[] => {
+    const daysArray = [];
+    const today = new Date();
+    const dayNames = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
+    const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+    for (let i = 0; i < numDays; i++) {
+        const currentDate = new Date(today);
+        currentDate.setDate(today.getDate() + i);
+
+        const id = `day-${i}`;
+        const dayNum = currentDate.getDate().toString();
+        const dayOfWeek = currentDate.getDay();
+
+        let short = dayNames[dayOfWeek];
+        let full = `${dayNames[dayOfWeek]} ${dayNum} de ${monthNames[currentDate.getMonth()]}`;
+
+        if (i === 0) {
+            short = 'HOY';
+            full = `Hoy · ${dayNames[dayOfWeek]} ${dayNum}`;
+        } else if (i === 1) {
+            short = 'MAÑ';
+            full = `Mañana · ${dayNames[dayOfWeek]} ${dayNum}`;
+        }
+
+        daysArray.push({ id, short, date: dayNum, full });
+    }
+    return daysArray;
+};
 
 const ALL_TIMES = [
     '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM',
@@ -95,23 +119,40 @@ export default function BookingScheduleStep({
     onBack,
     onConfirm,
 }: any) {
-    const [selectedDay, setSelectedDay] = useState<string>(days[1].id); // Por defecto "Mañana" como en tu foto
+    // 1. SOLUCIÓN AL HYDRATION: El estado empieza vacío o con datos de mock seguros
+    const [days, setDays] = useState<DayItem[]>([]);
+    const [selectedDay, setSelectedDay] = useState<string>('');
+
     const [selectedBarber, setSelectedBarber] = useState<string>(barbers[0].id);
     const [selectedTime, setSelectedTime] = useState<string>('');
     const [showCalendar, setShowCalendar] = useState(false);
     const router = useRouter();
+
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    // 2. SOLUCIÓN AL HYDRATION: Generamos los días SOLAMENTE en el cliente al montar
+    useEffect(() => {
+        const generated = generateDays(30);
+        setDays(generated);
+        setSelectedDay(generated[1].id); // Por defecto el segundo día ("Mañana")
+    }, []);
+
     const selectedBarberData = useMemo(
         () => barbers.find((b) => b.id === selectedBarber) ?? barbers[0],
         [selectedBarber]
     );
 
     const activeDayLabel = useMemo(
-        () => days.find((d) => d.id === selectedDay)?.full ?? 'Fecha seleccionada',
-        [selectedDay]
+        () => days.find((d) => d.id === selectedDay)?.full ?? 'Cargando fecha...',
+        [days, selectedDay]
     );
 
     const availableTimes = useMemo(() => {
-        return selectedBarberData.availableByDay[selectedDay] || [];
+        const mockTimes = selectedBarberData.availableByDay['tomorrow']
+            || selectedBarberData.availableByDay['today']
+            || ['10:00 AM', '11:30 AM', '02:00 PM', '04:00 PM'];
+
+        return mockTimes;
     }, [selectedBarberData, selectedDay]);
 
     const hasAvailableHours = availableTimes.length > 0;
@@ -128,22 +169,61 @@ export default function BookingScheduleStep({
             barberId: selectedBarber,
             dayId: selectedDay,
             time: selectedTime,
-        });// 3B. ¡Llevas al usuario a la página de éxito!
+        });
         router.push('/reservar/success');
     };
 
-    // Generar días falsos para el calendario visual
     const calendarDays = Array.from({ length: 30 }, (_, i) => i + 1);
+
+    const handleScrollDays = () => {
+        if (!scrollContainerRef.current || days.length === 0) return;
+
+        const container = scrollContainerRef.current;
+        const containerCenter = container.getBoundingClientRect().left + container.clientWidth / 2;
+
+        let closestBtnId: string | null = null;
+        let minDistance = Infinity;
+
+        const btns = container.querySelectorAll<HTMLButtonElement>('[data-day-id]');
+        btns.forEach((btn) => {
+            const rect = btn.getBoundingClientRect();
+            const btnCenter = rect.left + rect.width / 2;
+            const dist = Math.abs(containerCenter - btnCenter);
+
+            if (dist < minDistance) {
+                minDistance = dist;
+                closestBtnId = btn.getAttribute('data-day-id');
+            }
+        });
+
+        if (closestBtnId && closestBtnId !== selectedDay) {
+            setSelectedDay(closestBtnId);
+        }
+    };
+
+    const handleDayClick = (id: string) => {
+        setSelectedDay(id);
+        const btn = document.querySelector<HTMLButtonElement>(`[data-day-id="${id}"]`);
+        if (btn && scrollContainerRef.current) {
+            const container = scrollContainerRef.current;
+            const scrollLeft = btn.offsetLeft - container.clientWidth / 2 + btn.clientWidth / 2;
+            container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+        }
+    };
+
+    // Para evitar destellos feos mientras se hidrata, mostramos un skeleton básico si no hay días
+    if (days.length === 0) {
+        return <div className="min-h-[100dvh] bg-[#121212]"></div>;
+    }
 
     return (
         <section className={`${inter.variable} ${marker.variable} relative h-[100dvh] bg-[#121212] text-white overflow-hidden flex flex-col`}>
             {/* Efectos de fondo */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,87,34,0.12),transparent_40%),linear-gradient(180deg,#0f0f0f_0%,#121212_100%)] pointer-events-none" />
 
-            {/* Contenedor Principal: Ajustado el pb-[130px] para un leve scroll exacto */}
             <div className="relative mx-auto flex h-[calc(100dvh-140px)] w-full max-w-[430px] flex-col justify-evenly px-4 pt-2 ">
 
-                {/* Navbar (Con mt-4 para bajar un poco la flecha y el logo) */}
+                {/* Navbar */}
                 <div className="flex items-center justify-between ">
                     <button
                         onClick={onBack}
@@ -162,10 +242,7 @@ export default function BookingScheduleStep({
                     <div className="h-10 w-10" />
                 </div>
 
-                {/* Píldora del Servicio Elegido */}
-
-
-                {/* 1. Selector de Día */}
+                {/* 1. Selector de Día (Carrusel Magnético) */}
                 <div className="">
                     <div className="mb-3 flex items-center justify-between">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/40">
@@ -180,23 +257,28 @@ export default function BookingScheduleStep({
                         </button>
                     </div>
 
-                    <div className="-mx-1 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                        <div className="flex min-w-max gap-2.5 px-1">
+                    <div
+                        ref={scrollContainerRef}
+                        className="-mx-4 overflow-x-auto pb-4 px-[calc(50%-43px)] snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden"
+                        onScroll={handleScrollDays}
+                    >
+                        <div className="flex min-w-max py-3 gap-3">
                             {days.map((day) => {
                                 const active = selectedDay === day.id;
                                 return (
                                     <button
                                         key={day.id}
-                                        onClick={() => setSelectedDay(day.id)}
-                                        className={`flex flex-col items-center justify-center min-w-[75px] rounded-2xl border py-3 transition-all ${active
-                                            ? 'border-[#FF5722] bg-[#FF5722]/10 shadow-[0_0_15px_rgba(255,87,34,0.15)]'
-                                            : 'border-white/5 bg-white/[0.02]'
+                                        data-day-id={day.id}
+                                        onClick={() => handleDayClick(day.id)}
+                                        className={`snap-center flex flex-col items-center justify-center min-w-[76px] rounded-[20px] border py-3.5 transition-all duration-300 ${active
+                                            ? 'border-[#FF5722] bg-[#FF5722]/10 shadow-[0_0_15px_rgba(255,87,34,0.15)] scale-105'
+                                            : 'border-white/5 bg-white/[0.02] opacity-40 scale-95 hover:opacity-80'
                                             }`}
                                     >
-                                        <span className={`text-[10px] uppercase tracking-wider ${active ? 'text-[#FF8A65]' : 'text-white/40'}`}>
+                                        <span className={`text-[10px] uppercase tracking-wider transition-colors ${active ? 'text-[#FF8A65]' : 'text-white/40'}`}>
                                             {day.short}
                                         </span>
-                                        <span className={`mt-0.5 text-2xl font-bold ${active ? 'text-white' : 'text-white/60'}`}>
+                                        <span className={`mt-1 text-[1.4rem] font-bold transition-colors ${active ? 'text-white' : 'text-white/60'}`}>
                                             {day.date}
                                         </span>
                                     </button>
@@ -206,7 +288,7 @@ export default function BookingScheduleStep({
                     </div>
                 </div>
 
-                {/* 2. Selector de Barberos (Grid de Avatares) */}
+                {/* 2. Selector de Barberos */}
                 <div className="">
                     <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/40">
                         2. Elige tu barbero
@@ -246,7 +328,7 @@ export default function BookingScheduleStep({
                 </div>
 
                 {/* 3. Panel de Horas Horizontal */}
-                <div>
+                <div className="h-[160px] flex flex-col">
                     <div className=" flex items-center justify-between uppercase tracking-[0.1em] mb-3">
                         <p className={`text-[11px] font-bold ${hasAvailableHours ? 'text-white/40' : 'text-white/40'}`}>
                             {hasAvailableHours ? 'Horarios disponibles' : 'No queda más horario disponible'}
@@ -256,27 +338,39 @@ export default function BookingScheduleStep({
                         </p>
                     </div>
 
-                    {/* Contenedor de scroll fino naranja */}
-                    <div className="overflow-x-auto pb-5 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#FF5722]">
-                        <div className="grid grid-rows-2 grid-flow-col auto-cols-[110px] gap-2.5">
-                            {/* PASO 1: Filtramos para dejar SOLO las horas disponibles */}
-                            {ALL_TIMES.filter(time => availableTimes.includes(time)).map((time) => {
-                                const isSelected = selectedTime === time;
+                    <div className="flex-1">
+                        {hasAvailableHours ? (
+                            <div className="h-full overflow-x-auto pb-5 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#FF5722]">
+                                <div className="grid grid-rows-2 grid-flow-col auto-cols-[110px] gap-2.5">
+                                    {ALL_TIMES.filter(time => availableTimes.includes(time)).map((time) => {
+                                        const isSelected = selectedTime === time;
 
-                                return (
-                                    <button
-                                        key={time}
-                                        onClick={() => setSelectedTime(time)}
-                                        className={`flex h-12 items-center justify-center rounded-[14px] border text-[12px] font-semibold transition-all duration-200 ${isSelected
-                                            ? 'border-[#FF5722] bg-[#FF5722] text-black shadow-[0_0_15px_rgba(255,87,34,0.3)]'
-                                            : 'border-white/15 bg-white/[0.04] text-white/80 hover:border-[#FF5722]/50 hover:bg-[#FF5722]/10'
-                                            }`}
-                                    >
-                                        {time}
-                                    </button>
-                                );
-                            })}
-                        </div>
+                                        return (
+                                            <button
+                                                key={time}
+                                                onClick={() => setSelectedTime(time)}
+                                                className={`flex h-12 items-center justify-center rounded-[14px] border text-[12px] font-semibold transition-all duration-200 ${isSelected
+                                                    ? 'border-[#FF5722] bg-[#FF5722] text-black shadow-[0_0_15px_rgba(255,87,34,0.3)]'
+                                                    : 'border-white/15 bg-white/[0.04] text-white/80 hover:border-[#FF5722]/50 hover:bg-[#FF5722]/10'
+                                                    }`}
+                                            >
+                                                {time}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ) : (
+                            <NoSlotsCard
+                                barberName={selectedBarberData.name}
+                                onChangeBarber={() => {
+                                    const nextBarber = barbers.find(
+                                        (b) => b.id !== selectedBarber && (b.availableByDay[selectedDay] || []).length > 0
+                                    );
+                                    if (nextBarber) setSelectedBarber(nextBarber.id);
+                                }}
+                            />
+                        )}
                     </div>
                 </div>
 
@@ -357,13 +451,17 @@ export default function BookingScheduleStep({
                                 ))}
                                 {/* Espacios vacíos para iniciar el mes */}
                                 <div /> <div /> <div />
-                                {calendarDays.map((num) => {
-                                    const isToday = num === 12;
-                                    const isSelected = num === 13;
+                                {calendarDays.map((num, i) => {
+                                    const isToday = i === 0;
+                                    const dayId = `day-${i}`; // Obtenemos el ID real del día (day-0, day-1...)
+                                    const isSelected = selectedDay === dayId; // Comparamos con el estado real
                                     return (
                                         <button
                                             key={num}
-                                            onClick={() => setShowCalendar(false)}
+                                            onClick={() => {
+                                                handleDayClick(dayId); // Esto hace el scroll magnético al día seleccionado
+                                                setShowCalendar(false); // Cierra el modal
+                                            }}
                                             className={`mx-auto flex h-9 w-9 items-center justify-center rounded-full text-sm font-medium transition-all ${isSelected
                                                 ? 'bg-[#FF5722] text-black shadow-lg'
                                                 : isToday
@@ -371,7 +469,8 @@ export default function BookingScheduleStep({
                                                     : 'text-white/80 hover:bg-white/10'
                                                 }`}
                                         >
-                                            {num}
+                                            {/* Extraemos el número del día directamente del array de días que generamos */}
+                                            {days[i]?.date || num}
                                         </button>
                                     );
                                 })}
@@ -381,5 +480,49 @@ export default function BookingScheduleStep({
                 )}
             </AnimatePresence>
         </section>
+    );
+}
+
+function NoSlotsCard({
+    barberName,
+    onChangeBarber,
+}: {
+    barberName: string;
+    onChangeBarber?: () => void;
+}) {
+    return (
+        <div className="relative overflow-hidden rounded-[20px] border border-[#FF5722]/20 bg-[linear-gradient(180deg,rgba(255,87,34,0.10)_0%,rgba(255,87,34,0.02)_30%,rgba(255,255,255,0.01)_100%)] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.2)] backdrop-blur-md">
+            <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[#FF5722]/15 blur-xl" />
+            <div className="pointer-events-none absolute -left-6 bottom-0 h-16 w-16 rounded-full bg-white/[0.02] blur-xl" />
+
+            <div className="relative flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border border-[#FF5722]/30 bg-[#FF5722]/10 shadow-[0_0_15px_rgba(255,87,34,0.15)]">
+                        <Clock3 className="h-5 w-5 text-[#FF8A65]" />
+                    </div>
+
+                    <div className="flex-1">
+                        <div className="flex items-center gap-1.5">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#FF5722] shadow-[0_0_8px_rgba(255,87,34,0.8)]" />
+                            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">
+                                Agenda llena
+                            </span>
+                        </div>
+                        <p className="mt-0.5 text-sm font-semibold text-white">
+                            Sin turnos con <span className="text-[#FF8A65]">{barberName}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={onChangeBarber}
+                    className="group flex w-full items-center justify-center gap-2 rounded-[14px] border border-white/5 bg-white/[0.03] py-2.5 text-[11px] font-bold uppercase tracking-[0.1em] text-white/70 transition-all hover:border-[#FF5722]/30 hover:bg-[#FF5722]/10 hover:text-[#FF8A65]"
+                >
+                    <Scissors className="h-3.5 w-3.5 transition-transform group-hover:-rotate-12" />
+                    Ver otros barberos
+                </button>
+            </div>
+        </div>
     );
 }
