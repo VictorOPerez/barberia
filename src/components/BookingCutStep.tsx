@@ -36,41 +36,122 @@ type BookingCutStepProps = {
 
 const cuts: Haircut[] = [
     {
-        id: 'fade',
-        name: 'Fade',
-        description: 'Degradado limpio con acabado urbano.',
+        id: 'gorilla-classic',
+        name: 'Gorilla Classic',
+        description: 'Nuestro corte más popular. Incluye consulta personal y precisión en cualquier estilo.',
         duration: '30 min',
-        price: 25,
-        image:
-            'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=900&q=80',
+        price: 35,
+        image: '/recortes/gorilla-classic.png',
+
     },
     {
-        id: 'taper',
-        name: 'Taper',
-        description: 'Laterales suaves con flow moderno.',
-        duration: '35 min',
-        price: 30,
-        image:
-            'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=900&q=80',
-    },
-    {
-        id: 'crop',
-        name: 'Crop',
-        description: 'Textura frontal con vibra agresiva.',
-        duration: '40 min',
-        price: 28,
-        image:
-            'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80',
-    },
-    {
-        id: 'pompadour',
-        name: 'Pompadour',
-        description: 'Volumen clásico llevado al street style.',
-        duration: '45 min',
+        id: 'gorilla-restart',
+        name: 'Gorilla Restart',
+        description: 'Alineación de cabello y limpieza de barba con toalla caliente (no incluye corte).',
+        duration: '30 min',
         price: 40,
-        image:
-            'https://images.unsplash.com/photo-1512690459411-b0fd220c889f?auto=format&fit=crop&w=900&q=80',
+        image: '/recortes/gorilla-restart.png',
+
     },
+    {
+        id: 'gorilla-master-combo',
+        name: 'Gorilla Master Combo',
+        description: 'Paquete ejecutivo completo: corte de cabello, esculpido total de barba y toalla caliente.',
+        duration: '45 min',
+        price: 55,
+        image: '/recortes/gorilla-master-combo.png',
+
+    },
+    {
+        id: 'lite-beast-mode-beard',
+        name: '-LITE- Beast Mode Beard',
+        description: 'Alineación precisa de barba y personalización de estilo.',
+        duration: '20 min',
+        price: 25,
+        image: '/recortes/lite-beast-mode-beard.png',
+
+    },
+    {
+        id: 'gorilla-buzz',
+        name: 'Gorilla Buzz',
+        description: 'Estilo perfecto de bajo mantenimiento. Mismo nivel de máquina con ejecución precisa.',
+        duration: '30 min',
+        price: 28,
+        image: '/recortes/gorilla-buzz.png',
+
+    },
+    {
+        id: 'queens-neckline',
+        name: 'Queen\'s Neckline',
+        description: 'Estilizado de precisión para mujeres. Degradado en la nuca y diseño personalizado.',
+        duration: '25 min',
+        price: 28,
+        image: '/recortes/queens-neckline.png',
+
+    },
+    {
+        id: 'beast-mode-complete',
+        name: 'Beast Mode Complete',
+        description: 'La experiencia definitiva. Corte completo, esculpido de barba y diseño de cejas.',
+        duration: '65 min',
+        price: 70,
+        image: '/recortes/beast-mode-complete.png',
+
+    },
+    {
+        id: 'young-warrior',
+        name: 'Young Warrior',
+        description: 'Estilos enfocados en adolescentes (12-15 años). Diseños personalizados y modernos.',
+        duration: '30 min',
+        price: 30,
+        image: '/recortes/young-warrior.png',
+
+    },
+    {
+        id: 'beast-mode-beard',
+        name: 'Beast Mode Beard',
+        description: 'Esculpido completo de barba, recorte de precisión, estilo y tratamiento con toalla caliente.',
+        duration: '30 min',
+        price: 35,
+        image: '/recortes/beast-mode-beard.png',
+
+    },
+    {
+        id: 'gorilla-og-cut',
+        name: 'Gorilla OG Cut',
+        description: 'Especialidad para adultos mayores (65+). Masaje capilar relajante y estilo clásico.',
+        duration: '30 min',
+        price: 30,
+        image: '/recortes/gorilla-og-cut.png',
+
+    },
+    {
+        id: 'gorilla-smooth-dome',
+        name: 'Gorilla Smooth Dome',
+        description: 'Afeitado de cabeza con toalla caliente. Preparación premium y precisión con navaja libre.',
+        duration: '30 min',
+        price: 35,
+        image: '/recortes/gorilla-smooth-dome.png',
+
+    },
+    {
+        id: 'silverback-blend',
+        name: 'Silverback Blend',
+        description: 'Tratamiento de difuminado de canas. Color profesional, lavado y acondicionamiento.',
+        duration: '30 min',
+        price: 45,
+        image: '/recortes/silverback-blend.png',
+
+    },
+    {
+        id: 'smooth-gorilla-face',
+        name: 'Smooth Gorilla Face',
+        description: 'Afeitado completo de rostro con navaja y tratamiento facial de preparación.',
+        duration: '30 min',
+        price: 35,
+        image: '/recortes/smooth-gorilla-face.png',
+
+    }
 ];
 
 function getRelativePosition(index: number, currentIndex: number, total: number) {
