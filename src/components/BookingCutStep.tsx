@@ -301,7 +301,7 @@ export default function BookingCutStep({ onContinue }: BookingCutStepProps) {
 
                     <button
                         type="button"
-                        onClick={goPrev}
+                        onClick={goNext}
                         className="absolute left-0 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/48 text-white/80 backdrop-blur-md transition hover:border-[#FF5722]/40 hover:text-white"
                         aria-label="Corte anterior"
                     >
@@ -310,7 +310,7 @@ export default function BookingCutStep({ onContinue }: BookingCutStepProps) {
 
                     <button
                         type="button"
-                        onClick={goNext}
+                        onClick={goPrev}
                         className="absolute right-0 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/48 text-white/80 backdrop-blur-md transition hover:border-[#FF5722]/40 hover:text-white"
                         aria-label="Siguiente corte"
                     >
