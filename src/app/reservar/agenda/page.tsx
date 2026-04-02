@@ -20,7 +20,7 @@ export default function ReservarAgendaPage() {
                 duration: selectedCut.duration,
             }}
             onBack={() => router.push('/reservar/corte')}
-            onConfirm={(payload) => {
+            onConfirm={(payload: { date: string; time: string }) => {
                 console.log('Reserva final:', {
                     cut: selectedCut,
                     ...payload,
