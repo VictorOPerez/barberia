@@ -136,12 +136,12 @@ export default function BookingScheduleStep({
     const calendarDays = Array.from({ length: 30 }, (_, i) => i + 1);
 
     return (
-        <section className={`${inter.variable} ${marker.variable} relative min-h-screen bg-[#121212] text-white overflow-x-hidden`}>
+        <section className={`${inter.variable} ${marker.variable} relative min-h-[100dvh] bg-[#121212] text-white overflow-x-hidden`}>
             {/* Efectos de fondo */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,87,34,0.12),transparent_40%),linear-gradient(180deg,#0f0f0f_0%,#121212_100%)] pointer-events-none" />
 
             {/* Contenedor Principal: Ajustado el pb-[130px] para un leve scroll exacto */}
-            <div className="relative mx-auto flex min-h-screen w-full max-w-[430px] flex-col px-4 pt-2 ">
+            <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col px-4 pt-2 ">
 
                 {/* Navbar (Con mt-4 para bajar un poco la flecha y el logo) */}
                 <div className="flex items-center justify-between mt-4 mb-6">
