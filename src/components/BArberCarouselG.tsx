@@ -88,6 +88,7 @@ interface AnimState {
 
 export default function BarberCarousel() {
     const [bgIndex, setBgIndex] = useState(0);
+    const [stripIndex, setStripIndex] = useState(0);
     const [anim, setAnim] = useState<AnimState>({
         active: false,
         index: -1,
@@ -99,11 +100,21 @@ export default function BarberCarousel() {
     const touchDeltaX = useRef(0);
     const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
     const rootRef = useRef<HTMLDivElement | null>(null);
+    const [contentIndex, setContentIndex] = useState(0);
+
+    useEffect(() => {
+        if (!anim.active) {
+            setContentIndex(bgIndex);
+        }
+    }, [bgIndex, anim.active]);
     const goNext = useCallback(() => {
         if (anim.active || bgIndex >= CUTS.length - 1) return;
 
         const nextIdx = bgIndex + 1;
         const el = cardsRef.current[nextIdx];
+
+        // el strip se mueve primero como ya lo hacía visualmente
+        setStripIndex(nextIdx);
 
         if (!el) {
             setBgIndex(nextIdx);
@@ -140,7 +151,7 @@ export default function BarberCarousel() {
         const root = rootRef.current;
         if (!root) return;
 
-        // 1) Creamos un clon fullscreen de la imagen actual
+        // 1) ponemos el clon fullscreen de la escena actual
         setAnim({
             active: true,
             index: currentIdx,
@@ -149,47 +160,51 @@ export default function BarberCarousel() {
             direction: "backward",
         });
 
-        // 2) Debajo ya ponemos la escena anterior
+        // 2) debajo ya dejamos montado el background anterior
         setBgIndex(prevIdx);
 
-        // 3) Esperamos a que React pinte la tarjeta de destino en el strip
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                const el = cardsRef.current[currentIdx];
-                const rootNow = rootRef.current;
-                if (!el || !rootNow) {
-                    setAnim({
-                        active: false,
-                        index: -1,
-                        rect: null,
-                        phase: "idle",
-                        direction: "forward",
-                    });
-                    return;
-                }
+        // 3) primero movemos el carrusel hacia la derecha
+        setStripIndex(prevIdx);
 
-                const cardRect = el.getBoundingClientRect();
-                const rootRect = rootNow.getBoundingClientRect();
+        // 4) esperamos a que termine de moverse el strip
+        const STRIP_SHIFT_MS = 900;
 
-                const rect = new DOMRect(
-                    cardRect.left - rootRect.left,
-                    cardRect.top - rootRect.top,
-                    cardRect.width,
-                    cardRect.height
-                );
+        setTimeout(() => {
+            const el = cardsRef.current[currentIdx];
+            const rootNow = rootRef.current;
 
-                // 4) Ahora el clon se encoge hacia esa tarjeta
+            if (!el || !rootNow) {
                 setAnim({
-                    active: true,
-                    index: currentIdx,
-                    rect,
-                    phase: "collapsing",
-                    direction: "backward",
+                    active: false,
+                    index: -1,
+                    rect: null,
+                    phase: "idle",
+                    direction: "forward",
                 });
-            });
-        });
-    }, [anim.active, bgIndex]);
+                return;
+            }
 
+            const cardRect = el.getBoundingClientRect();
+            const rootRect = rootNow.getBoundingClientRect();
+
+            const rect = new DOMRect(
+                cardRect.left - rootRect.left,
+                cardRect.top - rootRect.top,
+                cardRect.width,
+                cardRect.height
+            );
+
+            // 5) después de que el carrusel ya llegó,
+            //    ahora sí el fondo grande baja a su tarjeta
+            setAnim({
+                active: true,
+                index: currentIdx,
+                rect,
+                phase: "collapsing",
+                direction: "backward",
+            });
+        }, STRIP_SHIFT_MS);
+    }, [anim.active, bgIndex]);
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             if (e.key === "ArrowRight") goNext();
@@ -222,22 +237,20 @@ export default function BarberCarousel() {
         }
     }, [anim.phase, anim.index, anim.direction]);
     // ANIMACIÓN ORIGINAL PERFECTA: FLIP hacia adelante
-    useLayoutEffect(() => {
-        if (anim.phase === "start" && anim.rect) {
-            document.body.offsetHeight; // Forzar reflow
-            setAnim((prev) => ({ ...prev, phase: "expanding" }));
-        }
-    }, [anim.phase, anim.rect]);
+
 
     useLayoutEffect(() => {
         if (anim.phase === "start" && anim.rect && anim.direction === "forward") {
-            document.body.offsetHeight;
-            setAnim((prev) => ({ ...prev, phase: "expanding" }));
+            const id = requestAnimationFrame(() => {
+                setAnim((prev) => ({ ...prev, phase: "expanding" }));
+            });
+
+            return () => cancelAnimationFrame(id);
         }
     }, [anim.phase, anim.rect, anim.direction]);
 
-    const activeData = CUTS[anim.active ? anim.index : bgIndex];
-    const focusIndex = (anim.active ? anim.index : bgIndex) + 1;
+    const activeData = CUTS[contentIndex];
+    const focusIndex = stripIndex + 1;
     const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
         touchStartX.current = e.touches[0].clientX;
         touchDeltaX.current = 0;
@@ -336,6 +349,7 @@ export default function BarberCarousel() {
 
                         transition:
                             "top 0.9s cubic-bezier(0.76, 0, 0.24, 1), left 0.9s cubic-bezier(0.76, 0, 0.24, 1), width 0.9s cubic-bezier(0.76, 0, 0.24, 1), height 0.9s cubic-bezier(0.76, 0, 0.24, 1), border-radius 0.9s cubic-bezier(0.76, 0, 0.24, 1)",
+                        willChange: "top, left, width, height, border-radius",
                     }}
                 >
                     <Image
@@ -345,8 +359,8 @@ export default function BarberCarousel() {
                         className="object-cover"
                     />
                     <div
-                        className="absolute inset-0 bg-black/50 bg-gradient-to-t md:bg-gradient-to-r from-black/90 via-black/40 to-transparent transition-opacity duration-700 ease-out"
-                        style={{ opacity: anim.phase === "expanding" ? 1 : 0 }}
+                        className="absolute inset-0 bg-black/50 bg-gradient-to-t md:bg-gradient-to-r from-black/90 via-black/40 to-transparent"
+                        style={{ opacity: 1 }}
                     />
                 </div>
             )}
@@ -408,6 +422,7 @@ export default function BarberCarousel() {
                         style={{
                             gap: "var(--card-gap)",
                             transform: `translateX(calc(var(--anchor) - (var(--card-w) + var(--card-gap)) * ${focusIndex}))`,
+                            willChange: "transform",
                         }}
                     >
                         {CUTS.map((item, i) => {

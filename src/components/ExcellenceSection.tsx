@@ -1,104 +1,539 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Bebas_Neue, Permanent_Marker } from "next/font/google";
+
+// ─── FONTS ───
+const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400" });
+const marker = Permanent_Marker({ subsets: ["latin"], weight: "400" });
+
+// ─── CONFIG ───
+const SLIDE_DURATION = 8000;
+const TRANSITION_MS = 700;
+
+interface Feature {
+    id: string;
+    label: string;
+    title: string;
+    accent: string;
+    description: string;
+    videoSrc: string;  // ← Descomentar cuando tengas los videos
+}
+
+const features: Feature[] = [
+    {
+        id: "precision",
+        label: "01",
+        title: "PRECISIÓN",
+        accent: "Milimétrica",
+        description:
+            "Dominio absoluto de la técnica. Cortes ejecutados con precisión milimétrica para un acabado impecable que define tu estilo.",
+        videoSrc: "/excellenceSection/precision.mp4",
+        // videoSrc: "/excellenceSection/precision.mp4",
+    },
+    {
+        id: "premium",
+        label: "02",
+        title: "PREMIUM",
+        accent: "De Elite",
+        description:
+            "Selección rigurosa de las mejores pomadas, aceites y tónicos. Cuidamos tu piel y barba con la gama más alta del mercado.",
+        videoSrc: "/excellenceSection/premium.mp4",
+        // videoSrc: "/videos/premium.mp4",
+    },
+    {
+        id: "evolution",
+        label: "03",
+        title: "EVOLUCIÓN",
+        accent: "Constante",
+        description:
+            "Siempre un paso adelante. Fusionamos las técnicas de la vieja escuela con el flow de las últimas tendencias.",
+        // videoSrc: "/videos/evolution.mp4",
+        videoSrc: "/excellenceSection/premium.mp4",
+    },
+];
+
+// ─── GRADIENTES PLACEHOLDER (reemplazar por video) ───
+const placeholderGradients = [
+    "radial-gradient(ellipse at 30% 60%, #331500 0%, #0a0200 50%, #050505 100%)",
+    "radial-gradient(ellipse at 70% 40%, #2a1800 0%, #0a0400 50%, #050505 100%)",
+    "radial-gradient(ellipse at 50% 50%, #1a0f00 0%, #080300 50%, #050505 100%)",
+];
 
 export default function ExcellenceSection() {
-    return (
-        <section className="relative w-full bg-[#0a0a0a] py-24 px-6 overflow-hidden flex flex-col items-center">
-            {/* Luz de fondo ambiental (Opcional, para dar atmósfera a la sección) */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-[#ff5500]/5 blur-[120px] pointer-events-none" />
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [phase, setPhase] = useState<"enter" | "exit">("enter");
+    const [sectionVisible, setSectionVisible] = useState(false);
+    const [cycleStarted, setCycleStarted] = useState(false);
+    const sectionRef = useRef<HTMLElement>(null);
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const progressKeyRef = useRef(0);
+    const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+    // ─── Intersection Observer ───
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setSectionVisible(true);
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.15 }
+        );
+        if (sectionRef.current) observer.observe(sectionRef.current);
+        return () => observer.disconnect();
+    }, []);
 
-            <div className="max-w-5xl w-full z-10 text-center mb-16">
-                <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
-                    Excelencia en <span className="text-[#ff5500] drop-shadow-[0_0_15px_rgba(255,85,0,0.5)]">Cada Detalle</span>
+    // ─── Arrancar ciclo tras ser visible ───
+    useEffect(() => {
+        if (sectionVisible && !cycleStarted) {
+            const t = setTimeout(() => setCycleStarted(true), 500);
+            return () => clearTimeout(t);
+        }
+    }, [sectionVisible, cycleStarted]);
+
+    // ─── Auto-cycle ───
+    const nextSlide = useCallback(() => {
+        setPhase("exit");
+        setTimeout(() => {
+            setActiveIndex((prev) => (prev + 1) % features.length);
+            progressKeyRef.current += 1;
+            setPhase("enter");
+        }, TRANSITION_MS);
+    }, []);
+
+    useEffect(() => {
+        if (!cycleStarted) return;
+        setPhase("enter");
+        timerRef.current = setInterval(nextSlide, SLIDE_DURATION);
+        return () => {
+            if (timerRef.current) clearInterval(timerRef.current);
+        };
+    }, [cycleStarted, nextSlide]);
+    // ─── Sincronizar video con slide activo ───
+    useEffect(() => {
+        videoRefs.current.forEach((video, i) => {
+            if (!video) return;
+            if (i === activeIndex) {
+                video.currentTime = 0;
+                video.play().catch(() => { });
+            } else {
+                video.pause();
+            }
+        });
+    }, [activeIndex]);
+    // ─── Navegación manual ───
+    const goTo = (i: number) => {
+        if (i === activeIndex) return;
+        if (timerRef.current) clearInterval(timerRef.current);
+        setPhase("exit");
+        setTimeout(() => {
+            setActiveIndex(i);
+            progressKeyRef.current += 1;
+            setPhase("enter");
+            timerRef.current = setInterval(nextSlide, SLIDE_DURATION);
+        }, TRANSITION_MS);
+    };
+
+    const current = features[activeIndex];
+    const isIn = phase === "enter";
+    const letters = current.title.split("");
+
+    return (
+        <section
+            ref={sectionRef}
+            className="relative w-full bg-[#050505] overflow-hidden flex flex-col items-center"
+        >
+            {/* ═══════════════════════════════════════════
+                FONDO AMBIENTAL
+            ═══════════════════════════════════════════ */}
+
+            {/* Grid de puntos */}
+            <div
+                className="absolute inset-0 pointer-events-none transition-opacity duration-[2000ms]"
+                style={{
+                    backgroundImage:
+                        "radial-gradient(rgba(255,85,0,0.12) 1px, transparent 1px)",
+                    backgroundSize: "24px 24px",
+                    opacity: sectionVisible ? 0.5 : 0,
+                }}
+            />
+
+            {/* Resplandor ambiental central */}
+            <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none transition-opacity duration-[2000ms]"
+                style={{
+                    background:
+                        "radial-gradient(circle, rgba(255,85,0,0.06) 0%, transparent 70%)",
+                    filter: "blur(60px)",
+                    opacity: sectionVisible ? 1 : 0,
+                }}
+            />
+
+            {/* ═══════════════════════════════════════════
+                HEADER
+            ═══════════════════════════════════════════ */}
+            <div
+                className="relative z-10 text-center pt-16 pb-8 px-5 transition-all duration-1000"
+                style={{
+                    opacity: sectionVisible ? 1 : 0,
+                    transform: sectionVisible ? "translateY(0)" : "translateY(30px)",
+                    transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+                }}
+            >
+                {/* Tag */}
+                <div className="inline-flex items-center gap-2.5 mb-5">
+                    <span
+                        className="h-[2px] bg-[#ff5500] rounded-full transition-all duration-700"
+                        style={{
+                            width: sectionVisible ? 24 : 0,
+                            boxShadow: "0 0 10px #ff5500",
+                            transitionDelay: "300ms",
+                        }}
+                    />
+                    <span className="text-[#ff5500] font-bold tracking-[0.25em] text-[10px] uppercase drop-shadow-[0_0_8px_rgba(255,85,0,0.7)]">
+                        Gorilla Standard
+                    </span>
+                    <span
+                        className="h-[2px] bg-[#ff5500] rounded-full transition-all duration-700"
+                        style={{
+                            width: sectionVisible ? 24 : 0,
+                            boxShadow: "0 0 10px #ff5500",
+                            transitionDelay: "300ms",
+                        }}
+                    />
+                </div>
+
+                {/* Título principal */}
+                <h2 className="leading-[1.1] mb-3">
+                    <span
+                        className={`${bebas.className} text-white text-[32px] tracking-[0.04em] block`}
+                    >
+                        EXCELENCIA EN
+                    </span>
+                    <span
+                        className={`${marker.className} text-[#ff5500] text-[34px] block mt-1 drop-shadow-[0_0_15px_rgba(255,85,0,0.45)]`}
+                    >
+                        Cada Detalle
+                    </span>
                 </h2>
-                <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto">
-                    Nuestro estándar es la perfección. Desde los productos premium que aplicamos hasta el último retoque de la navaja. Nuestros barberos están en constante evolución.
+
+                <p className="text-gray-600 text-[13px] max-w-[280px] mx-auto leading-relaxed font-light">
+                    El verdadero flow está en los detalles.
                 </p>
             </div>
 
-            {/* Grid de 3 Columnas */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl w-full mb-20 relative">
-                {features.map((feature, index) => (
-                    <div key={index} className="flex flex-col items-center text-center group">
-                        {/* Contenedor del Icono con efecto de Humo/Neón */}
-                        <div className="relative mb-6 flex justify-center items-center w-24 h-24">
-                            {/* Efecto de humo/resplandor animado */}
-                            <div className="absolute inset-0 bg-[#ff5500]/20 rounded-full blur-[20px] group-hover:bg-[#ff5500]/40 group-hover:blur-[25px] transition-all duration-700 animate-pulse" />
+            {/* ═══════════════════════════════════════════
+                SHOWCASE — TARJETA PRINCIPAL
+            ═══════════════════════════════════════════ */}
+            <div
+                className="relative z-10 w-full px-3 pb-6 transition-all duration-1000"
+                style={{
+                    opacity: cycleStarted ? 1 : 0,
+                    transform: cycleStarted
+                        ? "translateY(0) scale(1)"
+                        : "translateY(20px) scale(0.97)",
+                    transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+                    transitionDelay: "200ms",
+                }}
+            >
+                <div
+                    className="relative overflow-hidden rounded-[1.5rem] border border-white/[0.05]"
+                    style={{
+                        /* Aspect ratio más vertical para móvil — se siente mejor en pantalla completa */
+                        aspectRatio: "9 / 14",
+                        boxShadow:
+                            "0 0 50px rgba(255,85,0,0.05), 0 20px 40px rgba(0,0,0,0.5)",
+                    }}
+                >
+                    {/* ── Capas de fondo (crossfade) ── */}
+                    {features.map((f, i) => (
+                        <div
+                            key={f.id}
+                            className="absolute inset-0 transition-opacity"
+                            style={{
+                                background: placeholderGradients[i],
+                                opacity: i === activeIndex ? 1 : 0,
+                                transitionDuration: `${TRANSITION_MS}ms`,
+                                zIndex: 1,
+                            }}
+                        >
+                            {/* ╔═══════════════════════════════════════════════╗
+                                ║  VIDEO BACKGROUND — DESCOMENTAR CUANDO       ║
+                                ║  TENGAS LOS VIDEOS LISTOS                    ║
+                                ║                                              ║
+                                ║  Coloca tus videos en /public/videos/ con    ║
+                                ║  los nombres: precision.mp4, premium.mp4,    ║
+                                ║  evolution.mp4                               ║
+                                ║                                              ║
+                                ║  Tips para los videos:                       ║
+                                ║  - Resolución: 1080x1920 (vertical/móvil)   ║
+                                ║  - Duración: 6-10 segundos en loop           ║
+                                ║  - Formato: MP4 con H.264                    ║
+                                ║  - Comprimir a <3MB por video                ║
+                                ║  - Oscuros/moody para que el texto se lea    ║
+                                ╚═══════════════════════════════════════════════╝ */}
 
-                            {/* Icono central */}
-                            <div className="relative z-10 text-gray-300 group-hover:text-[#ff5500] group-hover:drop-shadow-[0_0_10px_rgba(255,85,0,0.8)] transition-all duration-300">
-                                {feature.icon}
-                            </div>
+                            <video
+                                ref={(el) => { videoRefs.current[i] = el; }}
+                                src={f.videoSrc}
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover"
+                                style={{ opacity: 0.45 }}
+                            />
+
+                        </div>
+                    ))}
+
+                    {/* Overlay oscuro para legibilidad */}
+                    <div
+                        className="absolute inset-0 z-[2]"
+                        style={{
+                            background:
+                                "linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.7) 100%)",
+                        }}
+                    />
+
+                    {/* Viñeta */}
+                    <div
+                        className="absolute inset-0 z-[2]"
+                        style={{
+                            background:
+                                "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.45) 100%)",
+                        }}
+                    />
+
+                    {/* Scan lines sutiles */}
+                    <div
+                        className="absolute inset-0 z-[2] pointer-events-none"
+                        style={{
+                            backgroundImage:
+                                "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,85,0,0.012) 2px, rgba(255,85,0,0.012) 4px)",
+                        }}
+                    />
+
+                    {/* ── INDICADOR SUPERIOR (móvil) ── */}
+                    <div className="absolute top-5 left-0 right-0 z-[4] flex justify-center gap-4 px-6">
+                        {features.map((f, i) => (
+                            <button
+                                key={f.id}
+                                onClick={() => goTo(i)}
+                                className="flex flex-col items-center gap-1.5 bg-transparent border-none p-0"
+                                aria-label={`Ir a ${f.title}`}
+                            >
+                                <span
+                                    className={`${bebas.className} text-[9px] tracking-[0.2em] uppercase transition-colors duration-500`}
+                                    style={{
+                                        color:
+                                            i === activeIndex
+                                                ? "#ff5500"
+                                                : "rgba(255,255,255,0.18)",
+                                    }}
+                                >
+                                    {f.title}
+                                </span>
+                                <span
+                                    className="h-[2px] rounded-full transition-all duration-600"
+                                    style={{
+                                        width: i === activeIndex ? 32 : 12,
+                                        background:
+                                            i === activeIndex
+                                                ? "#ff5500"
+                                                : "rgba(255,255,255,0.08)",
+                                        boxShadow:
+                                            i === activeIndex
+                                                ? "0 0 8px rgba(255,85,0,0.4)"
+                                                : "none",
+                                    }}
+                                />
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* ── CONTENIDO PRINCIPAL ── */}
+                    <div className="absolute inset-0 z-[3] flex flex-col justify-end p-6 pb-8">
+                        {/* Número de feature */}
+                        <div
+                            className="mb-2 transition-all duration-500"
+                            style={{
+                                opacity: isIn ? 1 : 0,
+                                transform: isIn ? "translateX(0)" : "translateX(-16px)",
+                                transitionTimingFunction:
+                                    "cubic-bezier(0.22, 1, 0.36, 1)",
+                                transitionDelay: "80ms",
+                            }}
+                        >
+                            <span
+                                className={`${bebas.className} text-[#ff5500]/30 text-[11px] tracking-[0.4em] font-bold`}
+                            >
+                                {current.label} / 03
+                            </span>
                         </div>
 
-                        {/* Texto */}
-                        <h3 className="text-2xl font-bold text-white mb-3 font-mono tracking-wide uppercase">
-                            {feature.title}
-                        </h3>
-                        <p className="text-gray-500 text-sm leading-relaxed max-w-[250px]">
-                            {feature.description}
+                        {/* Título — letras con stagger */}
+                        <div className="overflow-hidden mb-1">
+                            <h3 className={`${bebas.className} leading-none`}>
+                                {letters.map((letter, i) => (
+                                    <span
+                                        key={`${current.id}-letter-${i}`}
+                                        className="inline-block text-white transition-all"
+                                        style={{
+                                            fontSize: "clamp(52px, 14vw, 72px)",
+                                            letterSpacing: "0.03em",
+                                            opacity: isIn ? 1 : 0,
+                                            transform: isIn
+                                                ? "translateY(0)"
+                                                : "translateY(110%)",
+                                            transitionDuration: "450ms",
+                                            transitionTimingFunction:
+                                                "cubic-bezier(0.22, 1, 0.36, 1)",
+                                            transitionDelay: `${100 + i * 35}ms`,
+                                        }}
+                                    >
+                                        {letter === " " ? "\u00A0" : letter}
+                                    </span>
+                                ))}
+                            </h3>
+                        </div>
+
+                        {/* Palabra accent */}
+                        <div className="overflow-hidden mb-5">
+                            <span
+                                className={`${marker.className} text-[#ff5500] inline-block transition-all`}
+                                style={{
+                                    fontSize: "clamp(28px, 8vw, 42px)",
+                                    textShadow: "0 0 18px rgba(255,85,0,0.35)",
+                                    opacity: isIn ? 1 : 0,
+                                    transform: isIn
+                                        ? "translateY(0) scale(1)"
+                                        : "translateY(28px) scale(0.92)",
+                                    transitionDuration: "600ms",
+                                    transitionTimingFunction:
+                                        "cubic-bezier(0.22, 1, 0.36, 1)",
+                                    transitionDelay: "400ms",
+                                }}
+                            >
+                                {current.accent}
+                            </span>
+                        </div>
+
+                        {/* Línea neón */}
+                        <div
+                            className="mb-4 h-[2px] rounded-full"
+                            style={{
+                                width: isIn ? 80 : 0,
+                                background:
+                                    "linear-gradient(90deg, #ff5500, rgba(255,85,0,0.15))",
+                                boxShadow: "0 0 10px rgba(255,85,0,0.4)",
+                                transition:
+                                    "width 650ms cubic-bezier(0.22, 1, 0.36, 1) 300ms",
+                            }}
+                        />
+
+                        {/* Descripción */}
+                        <p
+                            className="text-white/50 text-[13px] leading-relaxed font-light max-w-[320px] transition-all"
+                            style={{
+                                opacity: isIn ? 1 : 0,
+                                transform: isIn ? "translateY(0)" : "translateY(14px)",
+                                transitionDuration: "550ms",
+                                transitionTimingFunction:
+                                    "cubic-bezier(0.22, 1, 0.36, 1)",
+                                transitionDelay: "500ms",
+                            }}
+                        >
+                            {current.description}
                         </p>
                     </div>
-                ))}
+
+                    {/* ── Partículas decorativas ── */}
+                    <div className="absolute inset-0 z-[2] pointer-events-none overflow-hidden">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <div
+                                key={`particle-${i}`}
+                                className="absolute rounded-full bg-[#ff5500]"
+                                style={{
+                                    width: i % 2 === 0 ? 2 : 1.5,
+                                    height: i % 2 === 0 ? 2 : 1.5,
+                                    opacity: 0.15 + (i % 3) * 0.08,
+                                    left: `${8 + i * 15}%`,
+                                    top: `${20 + (i % 4) * 18}%`,
+                                    animation: `excellenceFloat ${2.5 + i * 0.6}s ease-in-out infinite`,
+                                    animationDelay: `${i * 0.4}s`,
+                                }}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* ── Barra de progreso ── */}
+                <div className="flex gap-1.5 justify-center mt-5">
+                    {features.map((f, i) => (
+                        <button
+                            key={`prog-${f.id}`}
+                            onClick={() => goTo(i)}
+                            className="relative h-[3px] rounded-full overflow-hidden border-none p-0 transition-all duration-500"
+                            style={{
+                                width: i === activeIndex ? 64 : 24,
+                                background: "rgba(255,255,255,0.06)",
+                            }}
+                            aria-label={`Ir a ${f.title}`}
+                        >
+                            {i === activeIndex && (
+                                <div
+                                    key={progressKeyRef.current}
+                                    className="absolute inset-y-0 left-0 rounded-full bg-[#ff5500]"
+                                    style={{
+                                        boxShadow: "0 0 6px rgba(255,85,0,0.4)",
+                                        animation: `excellenceProgress ${SLIDE_DURATION}ms linear forwards`,
+                                    }}
+                                />
+                            )}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            {/* Badge: Sello de Cera Neón */}
-            <div className="relative inline-flex items-center justify-center p-1 rounded-full bg-gradient-to-r from-transparent via-[#ff5500]/30 to-transparent">
-                <div className="px-8 py-3 rounded-full bg-[#111] border border-[#ff5500]/50 shadow-[0_0_20px_rgba(255,85,0,0.3)] relative overflow-hidden group hover:shadow-[0_0_30px_rgba(255,85,0,0.6)] transition-shadow duration-300 cursor-default">
-                    {/* Brillo interno */}
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#ff5500] to-transparent opacity-50" />
+            {/* ═══════════════════════════════════════════
+                BADGE FINAL
+            ═══════════════════════════════════════════ */}
+            <div
+                className="relative z-10 pb-16 transition-all duration-1000"
+                style={{
+                    opacity: cycleStarted ? 1 : 0,
+                    transform: cycleStarted ? "translateY(0)" : "translateY(14px)",
+                    transitionDelay: "600ms",
+                }}
+            >
+                <div className="relative px-6 py-2.5 rounded-full bg-[#0a0a0a] border border-[#ff5500]/20 flex items-center gap-2.5 overflow-hidden group">
+                    {/* Brillo hover */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ff5500]/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
 
-                    <span className="relative text-[#ff5500] font-semibold tracking-widest text-sm uppercase drop-shadow-[0_0_5px_rgba(255,85,0,0.8)]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff5500] animate-pulse" />
+                    <span
+                        className={`${bebas.className} relative text-white/70 tracking-[0.2em] text-[10px] uppercase`}
+                    >
                         Calidad sin compromisos
                     </span>
                 </div>
             </div>
+
+            {/* ═══════════════════════════════════════════
+                KEYFRAMES
+            ═══════════════════════════════════════════ */}
+            <style>{`
+                @keyframes excellenceFloat {
+                    0%, 100% { transform: translate(0, 0); opacity: 0.15; }
+                    25% { transform: translate(6px, -10px); opacity: 0.4; }
+                    50% { transform: translate(-3px, -20px); opacity: 0.1; }
+                    75% { transform: translate(10px, -8px); opacity: 0.35; }
+                }
+                @keyframes excellenceProgress {
+                    from { width: 0%; }
+                    to { width: 100%; }
+                }
+            `}</style>
         </section>
     );
 }
-
-// --- DATOS E ICONOS ---
-
-const features = [
-    {
-        title: "Perfección",
-        description: "Dominio absoluto de la técnica. Cortes ejecutados con precisión milimétrica para un acabado impecable.",
-        icon: (
-            // Icono de Navaja Estilizada
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 14L20 4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2L4 20" />
-                <circle cx="6" cy="18" r="2" />
-                <path d="M14 8l-4 8" />
-            </svg>
-        ),
-    },
-    {
-        title: "Premium",
-        description: "Selección rigurosa de las mejores pomadas, aceites y tónicos para cuidar tu cabello y barba.",
-        icon: (
-            // Icono de Frasco de Pomada Vintage
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 8h14v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8z" />
-                <path d="M7 6v2" />
-                <path d="M17 6v2" />
-                <path d="M4 12v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" />
-                <rect x="9" y="14" width="6" height="4" rx="1" />
-            </svg>
-        ),
-    },
-    {
-        title: "Evolución",
-        description: "Siempre un paso adelante. Fusionamos las técnicas de la vieja escuela con las últimas tendencias urbanas.",
-        icon: (
-            // Icono de Reloj de Arena / Evolución
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 3h12" />
-                <path d="M6 21h12" />
-                <path d="M10 16a2 2 0 0 0 4 0" />
-                <path d="M8 3v4.5a4.5 4.5 0 0 0 1.318 3.182L12 13l2.682-2.318A4.5 4.5 0 0 0 16 7.5V3" />
-                <path d="M8 21v-4.5a4.5 4.5 0 0 1 1.318-3.182L12 11l2.682 2.318A4.5 4.5 0 0 1 16 16.5V21" />
-            </svg>
-        ),
-    }
-];

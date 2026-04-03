@@ -31,33 +31,70 @@ export default function BarberHero() {
         {/* CAPA DE EFECTOS COMPUESTA (Imagen de fondo + Gradiente + Blurs Naranjas por encima) */}
         {/* ============================================================================================= */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-
-          {/* A. La Imagen de Recorte: Ahora es la base de esta capa */}
-          {/* fill asegura que ocupe todo el espacio. Controlamos opacidad aquí con opacity-20 */}
-          <div className="absolute inset-0 z-0 opacity-35">
+          {/* Foto base más controlada */}
+          <div className="absolute inset-0 z-0 opacity-[0.35]">
             <Image
               src="/hero/hero-recorte.png"
               alt="Textura de fondo barbería"
               fill
               priority
-              className="object-cover object-center"
+              className="object-cover object-center scale-[1.02]"
             />
           </div>
 
-          {/* B. Gradiente de superposición: Para oscurecer la imagen y fusionar */}
+          {/* Oscurecimiento principal: más editorial, menos sucio */}
           <div
-            className="absolute inset-0 z-10 opacity-50"
+            className="absolute inset-0 z-10"
             style={{
-              backgroundImage: 'linear-gradient(180deg, rgba(18,18,18,0) 0%, rgba(18,18,18,1) 100%)',
+              background:
+                "linear-gradient(180deg, rgba(18,18,18,0.00) 0%, rgba(18,18,18,0.38) 18%, rgba(18,18,18,0.82) 58%, rgba(18,18,18,0.96) 100%)",
             }}
           />
 
-          {/* C. Los Blurs Naranjas: Con z-20 para estar por encima de la imagen y el gradiente */}
-          <div className="absolute left-[-120px] top-10 h-80 w-80 rounded-full bg-[#FF5722]/25 blur-3xl z-20" />
-          <div className="absolute bottom-[-50px] right-[-100px] h-96 w-96 rounded-full bg-[#FF5722]/15 blur-3xl z-20" />
+          {/* Capa lateral para dar legibilidad al texto sin embarrar toda la imagen */}
+          <div
+            className="absolute inset-0 z-[11]"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(10,10,10,0.72) 0%, rgba(10,10,10,0.46) 28%, rgba(10,10,10,0.14) 52%, rgba(10,10,10,0.0) 78%)",
+            }}
+          />
 
-          {/* Opcional: Un destello sutil radial en el centro para dar más profundidad sobre la imagen */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,87,34,0.08),transparent_50%)] z-15" />
+          {/* Fusión superior con el video/logo */}
+          <div
+            className="absolute top-0 left-0 right-0 h-24 z-[12]"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(18,18,18,0.55) 0%, rgba(18,18,18,0.12) 55%, rgba(18,18,18,0) 100%)",
+            }}
+          />
+
+          {/* Fusión inferior elegante */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-28 z-[12]"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(18,18,18,0) 0%, rgba(18,18,18,0.82) 100%)",
+            }}
+          />
+
+          {/* Acento naranja fino, no nube naranja */}
+          <div
+            className="absolute left-0 top-[22%] h-[42%] w-[180px] z-[13]"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(255,106,42,0.14) 0%, rgba(255,106,42,0.06) 35%, rgba(255,106,42,0.00) 100%)",
+              filter: "blur(22px)",
+            }}
+          />
+
+          {/* Vignette suave para lujo */}
+          <div
+            className="absolute inset-0 z-[14]"
+            style={{
+              boxShadow: "inset 0 0 120px rgba(0,0,0,0.28)",
+            }}
+          />
         </div>
         {/* ============================================================================================= */}
 
@@ -79,8 +116,8 @@ export default function BarberHero() {
 
           {/* Logo / Título */}
           <div className="mb-5 flex items-center gap-3">
-            <div className="rounded-xl border border-[#FF5722]/30 bg-[#1A1A1A] p-2">
-              <Scissors className="h-5 w-5 text-[#FF5722]" />
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2 backdrop-blur-md">
+              <Scissors className="h-5 w-5 text-[#FF6A2A]" />
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-white/40">Barbería</p>
