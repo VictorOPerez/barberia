@@ -8,6 +8,7 @@ import ExcellenceSection from "@/components/ExcellenceSection";
 import FoodCategoryCarousel from "@/components/FoodCategoryCarousel";
 import Footer from "@/components/Footer";
 import GoogleReviewsSection from "@/components/GoogleReviewsSection";
+import Navbar from "@/components/Navbar";
 import WhyChooseUsSection from "@/components/WhyChooseUsSection";
 
 export default function Home() {

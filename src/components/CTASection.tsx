@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Bebas_Neue, Permanent_Marker } from "next/font/google";
+import Link from "next/link";
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400" });
 const marker = Permanent_Marker({ subsets: ["latin"], weight: "400" });
@@ -166,9 +167,8 @@ export default function CTASection() {
                         transitionDelay: "300ms",
                     }}
                 >
-                    <a
-                        href="https://YOUR_BOOKING_LINK"
-                        target="_blank"
+                    <Link
+                        href="/reservar/corte"
                         rel="noopener noreferrer"
                         className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full overflow-hidden transition-all duration-500"
                         style={{
@@ -195,7 +195,7 @@ export default function CTASection() {
                         >
                             <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
-                    </a>
+                    </Link>
                 </div>
 
                 {/* ─── SEPARADOR ─── */}

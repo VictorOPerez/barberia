@@ -49,7 +49,7 @@ const features: Feature[] = [
         description:
             "Siempre un paso adelante. Fusionamos las técnicas de la vieja escuela con el flow de las últimas tendencias.",
         // videoSrc: "/videos/evolution.mp4",
-        videoSrc: "/excellenceSection/premium.mp4",
+        videoSrc: "/excellenceSection/evolution.mp4",
     },
 ];
 
@@ -73,14 +73,14 @@ export default function ExcellenceSection() {
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
-                if (entry.isIntersecting) {
-                    setSectionVisible(true);
-                    observer.disconnect();
-                }
+                setSectionVisible(entry.isIntersecting);
             },
-            { threshold: 0.15 }
+            { threshold: 0.35 }
         );
-        if (sectionRef.current) observer.observe(sectionRef.current);
+
+        const node = sectionRef.current;
+        if (node) observer.observe(node);
+
         return () => observer.disconnect();
     }, []);
 
@@ -110,18 +110,36 @@ export default function ExcellenceSection() {
             if (timerRef.current) clearInterval(timerRef.current);
         };
     }, [cycleStarted, nextSlide]);
-    // ─── Sincronizar video con slide activo ───
     useEffect(() => {
+        const activeVideo = videoRefs.current[activeIndex];
+        if (!activeVideo) return;
+
         videoRefs.current.forEach((video, i) => {
             if (!video) return;
-            if (i === activeIndex) {
-                video.currentTime = 0;
-                video.play().catch(() => { });
-            } else {
+
+            if (i !== activeIndex) {
                 video.pause();
+                video.currentTime = 0;
             }
         });
-    }, [activeIndex]);
+
+        if (!sectionVisible) {
+            activeVideo.pause();
+            return;
+        }
+
+        const tryPlay = () => {
+            const p = activeVideo.play();
+            if (p) p.catch(() => { });
+        };
+
+        if (activeVideo.readyState >= 2) {
+            tryPlay();
+        } else {
+            activeVideo.load();
+            activeVideo.addEventListener("loadeddata", tryPlay, { once: true });
+        }
+    }, [activeIndex, sectionVisible]);
     // ─── Navegación manual ───
     const goTo = (i: number) => {
         if (i === activeIndex) return;
@@ -279,8 +297,10 @@ export default function ExcellenceSection() {
                                 src={f.videoSrc}
                                 muted
                                 playsInline
+                                loop
+                                preload={i === activeIndex ? "auto" : "metadata"}
                                 className="absolute inset-0 w-full h-full object-cover"
-                                style={{ opacity: 0.45 }}
+                                style={{ opacity: 1 }}
                             />
 
                         </div>

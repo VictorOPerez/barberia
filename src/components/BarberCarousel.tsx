@@ -227,7 +227,7 @@ export default function BarberCarousel() {
   const cut = CUTS[idx];
 
   return (
-    <div
+    <section
       className="relative w-full overflow-hidden select-none flex flex-col"
       style={{
         height: "100vh",
@@ -672,6 +672,6 @@ export default function BarberCarousel() {
           50% { left: 110%; }
         }
       `}</style>
-    </div>
+    </section>
   );
 }

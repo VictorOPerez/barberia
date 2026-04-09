@@ -99,25 +99,25 @@ function CombSVG({ visible }: { visible: boolean }) {
 // ─── Datos de la galería ───
 const galleryItems = [
     {
-        src: "/barbershop/main-action.jpg",
+        src: "/barbershop/1.jpg",
         alt: "Barbería en acción",
         label: "El Ritual",
         caption: "Cada corte es una experiencia completa. Navaja caliente, toalla, precisión.",
     },
     {
-        src: "/barbershop/apron.jpg",
+        src: "/barbershop/2.jpg",
         alt: "Delantal de cuero",
         label: "Los Detalles",
         caption: "Cuero, acero, madera. Materiales que transmiten carácter.",
     },
     {
-        src: "/barbershop/brush.jpg",
+        src: "/barbershop/3.jpg",
         alt: "Cepillo de cerdas",
         label: "Las Herramientas",
         caption: "Cada herramienta seleccionada por su calidad y propósito.",
     },
     {
-        src: "/barbershop/neon-clock-wall.jpg",
+        src: "/barbershop/4.jpg",
         alt: "Pared de ladrillo con neón",
         label: "La Atmósfera",
         caption: "Ladrillo, neón y sombras cálidas. Un espacio con alma.",

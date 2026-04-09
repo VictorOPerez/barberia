@@ -190,12 +190,10 @@ export default function BookingCutStep({ onContinue }: BookingCutStepProps) {
             <div className="absolute right-[-90px] top-44 h-56 w-56 rounded-full bg-[#FF5722]/10 blur-3xl" />
 
             <div className="relative mx-auto flex h-[100svh] w-full max-w-[430px] flex-col overflow-hidden  pb-4 pt-3">
-                <div className="mb-3 flex items-center justify-between px-4">
+                <div className="mb-3 flex items-center justify-between h-9 px-4">
                     <div>
-                        <p className="text-[10px] uppercase tracking-[0.28em] text-white/38">Barbería</p>
-                        <p className="font-[family-name:var(--font-marker)] text-[1.65rem] leading-none text-[#FF5722]">
-                            Moderna
-                        </p>
+
+
                     </div>
                 </div>
 
@@ -361,6 +359,6 @@ export default function BookingCutStep({ onContinue }: BookingCutStepProps) {
                         </button>
                     </div></div>
             </div>
-        </section>
+        </section >
     );
 }

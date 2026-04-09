@@ -9,6 +9,7 @@ import {
     useLayoutEffect,
 } from "react";
 import { Bebas_Neue, Permanent_Marker } from "next/font/google";
+import Link from "next/link";
 interface Haircut {
     id: string;
     name: string;
@@ -277,7 +278,7 @@ export default function BarberCarousel() {
     };
     return (
         // DISEÑO RESPONSIVE Y VARIABLES CSS
-        <div
+        <section id="services"
             ref={rootRef}
             className="relative flex h-screen min-h-[700px] w-full flex-col overflow-hidden bg-black font-sans select-none 
             [--card-w:180px] [--card-h:270px] [--card-gap:14px] [--anchor:10vw] 
@@ -395,7 +396,8 @@ export default function BarberCarousel() {
                         </p>
 
                         {/* BOTÓN NARANJA */}
-                        <button
+                        <Link
+                            href="/reservar/corte"
                             className="animate-fade-up opacity-0 mt-6 md:mt-10 px-6 md:px-8 py-3 md:py-4 border rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] transition-transform hover:scale-105"
                             style={{
                                 backgroundColor: "var(--accent-orange)",
@@ -406,7 +408,7 @@ export default function BarberCarousel() {
                             }}
                         >
                             Reservar Turno
-                        </button>
+                        </Link>
                     </div>
                 </div>
 
@@ -553,7 +555,7 @@ export default function BarberCarousel() {
           animation-fill-mode: forwards;
         }
       `}</style>
-        </div>
+        </section>
     );
 }
 

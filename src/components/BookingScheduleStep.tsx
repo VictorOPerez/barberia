@@ -227,7 +227,7 @@ export default function BookingScheduleStep({
                 <div className="flex items-center justify-between ">
                     <button
                         onClick={onBack}
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.04] text-white/80 transition hover:bg-white/10"
+                        className="flex mt-10 h-10 w-10 items-center justify-center rounded-full bg-white/[0.04] text-white/80 transition hover:bg-white/10"
                     >
                         <ArrowLeft className="h-5 w-5" />
                     </button>
