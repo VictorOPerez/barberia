@@ -109,7 +109,7 @@ export default function FoodCategoryCarousel() {
       style={{
         position: "relative",
         width: "100%",
-        height: "100vh",
+        height: "100dvh",
         minHeight: 580,
         maxHeight: 750,
         overflow: "hidden",

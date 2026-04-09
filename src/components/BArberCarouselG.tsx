@@ -280,7 +280,7 @@ export default function BarberCarousel() {
         // DISEÑO RESPONSIVE Y VARIABLES CSS
         <section id="services"
             ref={rootRef}
-            className="relative flex h-screen min-h-[700px] w-full flex-col overflow-hidden bg-black font-sans select-none 
+            className="relative flex h-dvh min-h-[700px] w-full flex-col overflow-hidden bg-black font-sans select-none 
             [--card-w:180px] [--card-h:270px] [--card-gap:14px] [--anchor:10vw] 
             md:[--card-w:220px] md:[--card-h:330px] md:[--card-gap:20px] md:[--anchor:52vw]
             [--accent-orange:#FF6A2A]"
