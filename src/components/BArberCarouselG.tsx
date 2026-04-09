@@ -103,11 +103,6 @@ export default function BarberCarousel() {
     const rootRef = useRef<HTMLDivElement | null>(null);
     const [contentIndex, setContentIndex] = useState(0);
 
-    useEffect(() => {
-        if (!anim.active) {
-            setContentIndex(bgIndex);
-        }
-    }, [bgIndex, anim.active]);
     const goNext = useCallback(() => {
         if (anim.active || bgIndex >= CUTS.length - 1) return;
 
@@ -219,6 +214,9 @@ export default function BarberCarousel() {
             const timer = setTimeout(() => {
                 if (anim.direction === "forward") {
                     setBgIndex(anim.index);
+                    setContentIndex(anim.index);
+                } else {
+                    setContentIndex(bgIndex);
                 }
 
                 requestAnimationFrame(() => {
@@ -236,7 +234,7 @@ export default function BarberCarousel() {
 
             return () => clearTimeout(timer);
         }
-    }, [anim.phase, anim.index, anim.direction]);
+    }, [anim.phase, anim.index, anim.direction, bgIndex]);
     // ANIMACIÓN ORIGINAL PERFECTA: FLIP hacia adelante
 
 
@@ -280,10 +278,11 @@ export default function BarberCarousel() {
         // DISEÑO RESPONSIVE Y VARIABLES CSS
         <section id="services"
             ref={rootRef}
-            className="relative flex h-svh min-h-[700px] w-full flex-col overflow-hidden bg-black font-sans select-none 
+            className="relative flex min-h-[100svh] md:h-svh md:min-h-[700px] w-full flex-col overflow-hidden bg-black font-sans select-none lg:max-w-[1180px] lg:mx-auto lg:rounded-[36px]
             [--card-w:180px] [--card-h:270px] [--card-gap:14px] [--anchor:10vw] 
             md:[--card-w:220px] md:[--card-h:330px] md:[--card-gap:20px] md:[--anchor:52vw]
             [--accent-orange:#FF6A2A]"
+            style={{ overflowAnchor: "none" }}
         >
 
             {/* CAPA 1: FONDO ESTATICO */}
@@ -370,8 +369,8 @@ export default function BarberCarousel() {
             <div className="absolute inset-0 z-[20] pointer-events-none flex flex-col md:flex-row">
 
                 {/* TEXTOS PRINCIPALES CON ESTILO URBANO */}
-                <div className="w-full md:w-[50vw] h-[55%] md:h-full flex flex-col justify-end md:justify-center px-6 md:px-[8vw] pb-10 md:pb-0 pointer-events-auto z-10">
-                    <div key={`text-${activeData.id}`} className="flex flex-col items-start text-white">
+                <div className="w-full md:w-[50vw] flex flex-1 flex-col justify-end md:justify-center px-6 md:px-[8vw] pt-24 pb-6 md:pb-0 pointer-events-auto z-10">
+                    <div className="flex flex-col items-start text-white">
                         <div className="animate-fade-up opacity-0 flex items-center gap-3" style={{ animationDelay: "0.1s" }}>
                             <span
                                 className={`${bebas.className} uppercase tracking-[0.28em] text-[13px] md:text-[15px]`}
@@ -414,7 +413,7 @@ export default function BarberCarousel() {
 
                 {/* CARRUSEL DE TARJETAS (Posición más baja en móvil) */}
                 <div
-                    className="absolute top-[72%] md:top-[58%] -translate-y-1/2 w-full pointer-events-auto touch-pan-y"
+                    className="relative mt-auto w-full pb-24 pointer-events-auto touch-pan-y md:absolute md:top-[58%] md:mt-0 md:pb-0 md:-translate-y-1/2"
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}

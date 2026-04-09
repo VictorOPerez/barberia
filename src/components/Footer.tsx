@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { Bebas_Neue, Permanent_Marker } from "next/font/google";
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400" });
@@ -58,7 +57,7 @@ export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="relative bg-[#030303] overflow-hidden">
+        <footer className="relative bg-[#030303] overflow-hidden lg:px-6">
             {/* ═══ LÍNEA NEÓN SUPERIOR ═══ */}
             <div className="relative h-px w-full">
                 <div
@@ -79,9 +78,9 @@ export default function Footer() {
             </div>
 
             {/* ═══ CONTENIDO PRINCIPAL ═══ */}
-            <div className="px-6 pt-14 pb-8 max-w-md mx-auto">
+            <div className="px-6 pt-14 pb-8 max-w-md mx-auto lg:max-w-[1240px] lg:px-8 lg:pt-20 lg:pb-10">
                 {/* ─── LOGO ─── */}
-                <div className="text-center mb-10">
+                <div className="text-center mb-10 lg:text-left lg:mb-14">
                     {/* Reemplaza con tu logo real */}
                     {/* <Image src="/logo.png" alt="Gorilla Grooming Co." width={120} height={60} /> */}
                     <div className="inline-block">
@@ -98,7 +97,7 @@ export default function Footer() {
                 </div>
 
                 {/* ─── GRID: HORARIO + LINKS ─── */}
-                <div className="grid grid-cols-2 gap-8 mb-10">
+                <div className="grid grid-cols-2 gap-8 mb-10 lg:grid-cols-3 lg:gap-14 lg:mb-14">
                     {/* Horario */}
                     <div>
                         <h4 className={`${bebas.className} text-white/40 text-[11px] tracking-[0.25em] uppercase mb-4`}>
@@ -146,7 +145,7 @@ export default function Footer() {
                 </div>
 
                 {/* ─── UBICACIÓN ─── */}
-                <div className="mb-10">
+                <div className="mb-10 lg:max-w-[420px]">
                     <h4 className={`${bebas.className} text-white/40 text-[11px] tracking-[0.25em] uppercase mb-3`}>
                         Ubicación
                     </h4>
@@ -202,7 +201,7 @@ export default function Footer() {
                 </div>
 
                 {/* ─── SOCIALS ─── */}
-                <div className="flex justify-center gap-3 mb-10">
+                <div className="flex justify-center gap-3 mb-10 lg:justify-start">
                     {socials.map((s) => (
                         <a
                             key={s.name}
@@ -228,7 +227,7 @@ export default function Footer() {
                 </div>
 
                 {/* ─── BOTTOM BAR ─── */}
-                <div className="flex flex-col items-center gap-3">
+                <div className="flex flex-col items-center gap-3 lg:flex-row lg:justify-between">
                     <p className="text-white/15 text-[10px] font-light tracking-wide text-center">
                         © {currentYear} Gorilla Grooming Co. Todos los derechos reservados.
                     </p>

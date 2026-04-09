@@ -217,7 +217,7 @@ export default function GoogleReviewsSection() {
     return (
         <section
             ref={sectionRef}
-            className="relative overflow-hidden bg-[#050505] py-20"
+            className="relative overflow-hidden bg-[#050505] py-20 lg:px-6 lg:py-28"
         >
             {/* ═══ AMBIENT ═══ */}
             <div className="absolute inset-0 pointer-events-none">
@@ -232,7 +232,7 @@ export default function GoogleReviewsSection() {
 
             {/* ═══ HEADER ═══ */}
             <div
-                className="relative z-10 text-center px-6 mb-12 transition-all duration-1000"
+                className="relative z-10 text-center px-6 mb-12 transition-all duration-1000 lg:max-w-4xl lg:mx-auto"
                 style={{
                     opacity: visible ? 1 : 0,
                     transform: visible ? "translateY(0)" : "translateY(24px)",
@@ -276,11 +276,11 @@ export default function GoogleReviewsSection() {
 
                 {/* Title */}
                 <h2 className="leading-[1] mb-3">
-                    <span className={`${bebas.className} text-white text-[30px] tracking-[0.03em] block`}>
+                    <span className={`${bebas.className} text-white text-[30px] tracking-[0.03em] block lg:text-[4.4rem]`}>
                         LO QUE DICEN
                     </span>
                     <span
-                        className={`${marker.className} text-[#ff5500] text-[32px] block mt-1`}
+                        className={`${marker.className} text-[#ff5500] text-[32px] block mt-1 lg:text-[3.8rem]`}
                         style={{ textShadow: "0 0 15px rgba(255,85,0,0.35)" }}
                     >
                         Nuestros Clientes
@@ -300,7 +300,7 @@ export default function GoogleReviewsSection() {
 
             {/* ═══ MARQUEE DIAGONAL ═══ */}
             <div
-                className="relative z-10 transition-all duration-1000"
+                className="relative z-10 transition-all duration-1000 lg:max-w-[1380px] lg:mx-auto"
                 style={{
                     opacity: visible ? 1 : 0,
                     transitionDelay: "300ms",
@@ -326,7 +326,7 @@ export default function GoogleReviewsSection() {
 
             {/* ═══ BOTTOM CTA ═══ */}
             <div
-                className="relative z-10 text-center mt-12 px-6 transition-all duration-1000"
+                className="relative z-10 text-center mt-12 px-6 transition-all duration-1000 lg:mt-16"
                 style={{
                     opacity: visible ? 1 : 0,
                     transform: visible ? "translateY(0)" : "translateY(16px)",

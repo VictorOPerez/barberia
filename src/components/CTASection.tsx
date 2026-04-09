@@ -63,7 +63,7 @@ export default function CTASection() {
     return (
         <section
             ref={sectionRef}
-            className="relative overflow-hidden bg-[#050505] py-24 px-5"
+            className="relative overflow-hidden bg-[#050505] py-24 px-5 lg:px-6 lg:py-32"
         >
             {/* ═══ AMBIENT ═══ */}
             {/* Glow superior */}
@@ -99,7 +99,8 @@ export default function CTASection() {
             </div>
 
             {/* ═══ CONTENIDO ═══ */}
-            <div className="relative z-10 max-w-md mx-auto text-center">
+            <div className="relative z-10 max-w-md mx-auto text-center lg:max-w-[1100px] lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:items-center lg:gap-14 lg:text-left">
+                <div>
                 {/* Tag */}
                 <div
                     className="transition-all duration-1000"
@@ -131,14 +132,14 @@ export default function CTASection() {
                     }}
                 >
                     <h2 className="leading-[0.95]">
-                        <span className={`${bebas.className} text-white text-[42px] tracking-[0.03em] block`}>
+                        <span className={`${bebas.className} text-white text-[42px] tracking-[0.03em] block lg:text-[5rem]`}>
                             TU PRÓXIMO
                         </span>
-                        <span className={`${bebas.className} text-white text-[42px] tracking-[0.03em] block`}>
+                        <span className={`${bebas.className} text-white text-[42px] tracking-[0.03em] block lg:text-[5rem]`}>
                             CORTE TE
                         </span>
                         <span
-                            className={`${marker.className} text-[#ff5500] text-[46px] block mt-1`}
+                            className={`${marker.className} text-[#ff5500] text-[46px] block mt-1 lg:text-[4.8rem]`}
                             style={{ textShadow: "0 0 20px rgba(255,85,0,0.4), 0 0 40px rgba(255,85,0,0.15)" }}
                         >
                             Espera
@@ -148,7 +149,7 @@ export default function CTASection() {
 
                 {/* Subtítulo */}
                 <p
-                    className="text-white/30 text-[13px] leading-relaxed font-light max-w-[280px] mx-auto mb-10 transition-all duration-1000"
+                    className="text-white/30 text-[13px] leading-relaxed font-light max-w-[280px] mx-auto mb-10 transition-all duration-1000 lg:mx-0 lg:max-w-[460px] lg:text-[1rem]"
                     style={{
                         opacity: visible ? 1 : 0,
                         transform: visible ? "translateY(0)" : "translateY(16px)",
@@ -228,7 +229,7 @@ export default function CTASection() {
                 </div>
 
                 {/* ─── REDES SOCIALES ─── */}
-                <div className="flex justify-center gap-4">
+                <div className="flex justify-center gap-4 lg:justify-start">
                     {socials.map((social, i) => (
                         <a
                             key={social.name}
@@ -251,7 +252,7 @@ export default function CTASection() {
 
                 {/* Label de redes */}
                 <div
-                    className="mt-5 flex justify-center gap-6 transition-all duration-1000"
+                    className="mt-5 flex justify-center gap-6 transition-all duration-1000 lg:justify-start"
                     style={{
                         opacity: visible ? 1 : 0,
                         transitionDelay: "700ms",
@@ -265,6 +266,18 @@ export default function CTASection() {
                             {s.name}
                         </span>
                     ))}
+                </div>
+                </div>
+                <div className="hidden lg:flex lg:flex-col lg:items-stretch lg:gap-4">
+                    <div className="rounded-[28px] border border-white/[0.06] bg-[#0b0b0b] p-6 text-left">
+                        <p className="text-[10px] uppercase tracking-[0.3em] text-white/30">Fast Lane</p>
+                        <p className={`${bebas.className} mt-3 text-[2.4rem] tracking-[0.06em] text-white`}>Reserva</p>
+                        <p className="mt-2 text-sm leading-6 text-white/45">Desktop con más presencia visual, móvil intacto.</p>
+                    </div>
+                    <div className="rounded-[28px] border border-[#ff5500]/15 bg-[#120904] p-6 text-left">
+                        <p className="text-[10px] uppercase tracking-[0.3em] text-[#ff5500]/60">Open Slots</p>
+                        <p className={`${marker.className} mt-3 text-[2.4rem] leading-none text-[#ff5500]`}>Hoy</p>
+                    </div>
                 </div>
             </div>
         </section>

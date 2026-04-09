@@ -46,7 +46,11 @@ export default function Navbar() {
 
     // ─── Scroll detection ───
     useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 40);
+        const onScroll = () => {
+            const nextScrolled = window.scrollY > 40;
+            setScrolled((prev) => (prev === nextScrolled ? prev : nextScrolled));
+        };
+        onScroll();
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
@@ -94,7 +98,20 @@ export default function Navbar() {
                         : "1px solid transparent",
                 }}
             >
-                <div className="flex items-center justify-between px-5 py-4 max-w-7xl mx-auto">
+                <div className="pointer-events-none absolute inset-x-0 top-0 hidden h-full lg:block">
+                    <div
+                        className="mx-auto h-full max-w-[1180px] rounded-b-[26px] border border-white/[0.05] transition-all duration-500"
+                        style={{
+                            background: scrolled
+                                ? "linear-gradient(180deg, rgba(8,8,8,0.88) 0%, rgba(8,8,8,0.68) 100%)"
+                                : "linear-gradient(180deg, rgba(8,8,8,0.32) 0%, rgba(8,8,8,0.06) 100%)",
+                            boxShadow: scrolled
+                                ? "0 18px 40px rgba(0,0,0,0.24)"
+                                : "0 10px 24px rgba(0,0,0,0.12)",
+                        }}
+                    />
+                </div>
+                <div className="relative flex items-center justify-between px-5 py-4 max-w-[1180px] mx-auto lg:px-8 xl:px-10">
                     {/* ─── LOGO ─── */}
                     <Link
                         href="/"
@@ -102,7 +119,7 @@ export default function Navbar() {
                         onClick={closeMenu}
                     >
                         <span
-                            className={`${marker.className} text-[20px] leading-none transition-colors duration-500`}
+                            className={`${marker.className} text-[20px] leading-none transition-colors duration-500 lg:text-[24px]`}
                             style={{
                                 color: isOpen ? "white" : "#ff5500",
                                 textShadow: isOpen
@@ -113,7 +130,7 @@ export default function Navbar() {
                             Gorilla
                         </span>
                         <span
-                            className={`${bebas.className} text-[8px] tracking-[0.3em] uppercase transition-colors duration-500`}
+                            className={`${bebas.className} text-[8px] tracking-[0.3em] uppercase transition-colors duration-500 lg:text-[9px]`}
                             style={{
                                 color: isOpen
                                     ? "rgba(255,255,255,0.4)"
@@ -127,7 +144,7 @@ export default function Navbar() {
                     {/* ═══════════════════════════════════════════
                         DESKTOP NAV (hidden en móvil, visible lg+)
                     ═══════════════════════════════════════════ */}
-                    <div className="hidden lg:flex items-center gap-1">
+                    <div className="hidden lg:flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.02] px-2 py-1.5 backdrop-blur-md">
                         {navLinks.map((link) => {
                             const disabled = isLinkDisabled(link.href);
 
@@ -152,7 +169,7 @@ export default function Navbar() {
                                 <Link
                                     key={link.label}
                                     href={link.href}
-                                    className={`${bebas.className} group relative px-4 py-2 text-[14px] tracking-[0.15em] uppercase text-white/50 hover:text-white transition-colors duration-300 block`}
+                                    className={`${bebas.className} group relative rounded-full px-4 py-2 text-[14px] tracking-[0.15em] uppercase text-white/50 hover:bg-white/[0.04] hover:text-white transition-colors duration-300 block`}
                                 >
                                     {link.label}
                                     {/* Underline hover animado */}
@@ -176,7 +193,7 @@ export default function Navbar() {
                     <div className="hidden lg:flex items-center gap-4">
                         <a
                             href={contactInfo.phoneHref}
-                            className="flex items-center gap-2 text-white/25 hover:text-white/50 transition-colors duration-300"
+                            className="flex items-center gap-2 rounded-full border border-white/[0.05] bg-white/[0.02] px-4 py-2 text-white/25 hover:text-white/50 transition-colors duration-300"
                         >
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#ff5500]/30">
                                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
@@ -190,10 +207,10 @@ export default function Navbar() {
 
                         <Link
                             href="/reservar/corte"
-                            className="group relative inline-flex items-center gap-2 px-5 py-2 rounded-full overflow-hidden transition-all duration-500"
+                            className="group relative inline-flex items-center gap-2 px-6 py-2.5 rounded-full overflow-hidden transition-all duration-500"
                             style={{
                                 background: "linear-gradient(135deg, #ff5500, #cc4400)",
-                                boxShadow: "0 0 20px rgba(255,85,0,0.15), 0 4px 12px rgba(0,0,0,0.3)",
+                                boxShadow: "0 0 20px rgba(255,85,0,0.15), 0 10px 24px rgba(0,0,0,0.32)",
                             }}
                         >
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />

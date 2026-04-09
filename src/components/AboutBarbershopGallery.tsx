@@ -131,7 +131,7 @@ export default function AboutBarbershopGallery() {
     const galleryReveal = useReveal(0.1);
 
     return (
-        <section className="relative overflow-hidden bg-[#050505] text-white">
+        <section className="relative overflow-hidden bg-[#050505] text-white lg:px-6">
             {/* ═══════════════════════════════════════════
                 LÍNEA NEÓN VERTICAL (hilo conductor)
             ═══════════════════════════════════════════ */}
@@ -154,7 +154,7 @@ export default function AboutBarbershopGallery() {
             ═══════════════════════════════════════════ */}
             <div
                 ref={header.ref}
-                className="relative z-10 pt-20 pb-10 pl-14 pr-6 md:pl-20 md:pr-10"
+                className="relative z-10 pt-20 pb-10 pl-14 pr-6 md:pl-20 md:pr-10 lg:max-w-[1280px] lg:mx-auto lg:pt-28"
             >
                 {/* SVG decorativo flotante */}
                 <div className="absolute top-16 right-6 md:right-14">
@@ -214,7 +214,7 @@ export default function AboutBarbershopGallery() {
             ═══════════════════════════════════════════ */}
             <div
                 ref={galleryReveal.ref}
-                className="relative z-10 pl-14 md:pl-20 pb-8"
+                className="relative z-10 pl-14 md:pl-20 pb-8 lg:max-w-[1280px] lg:mx-auto lg:pb-14"
             >
                 {/* Dot en la línea */}
                 <div
@@ -227,7 +227,7 @@ export default function AboutBarbershopGallery() {
 
                 {/* Tira scrolleable */}
                 <div
-                    className="flex gap-4 overflow-x-auto pb-6 pr-6 snap-x snap-mandatory scrollbar-hide transition-all duration-1000"
+                    className="flex gap-4 overflow-x-auto pb-6 pr-6 snap-x snap-mandatory scrollbar-hide transition-all duration-1000 lg:gap-6 lg:pr-2"
                     style={{
                         opacity: galleryReveal.visible ? 1 : 0,
                         transform: galleryReveal.visible ? "translateX(0)" : "translateX(30px)",
@@ -239,7 +239,7 @@ export default function AboutBarbershopGallery() {
                     {galleryItems.map((item, i) => (
                         <div
                             key={i}
-                            className="group relative flex-shrink-0 w-[72vw] max-w-[320px] snap-start"
+                            className="group relative flex-shrink-0 w-[72vw] max-w-[320px] snap-start lg:w-[24vw] lg:max-w-[340px]"
                             style={{
                                 transitionDelay: `${i * 100}ms`,
                             }}
@@ -286,7 +286,7 @@ export default function AboutBarbershopGallery() {
                     ))}
 
                     {/* Última tarjeta: decorativa/CTA */}
-                    <div className="relative flex-shrink-0 w-[72vw] max-w-[320px] snap-start flex items-center justify-center">
+                    <div className="relative flex-shrink-0 w-[72vw] max-w-[320px] snap-start flex items-center justify-center lg:w-[24vw] lg:max-w-[340px]">
                         <div
                             className="w-full rounded-2xl border border-[#ff5500]/15 bg-[#0a0a0a] flex flex-col items-center justify-center gap-4 p-8"
                             style={{ aspectRatio: "3 / 4" }}
@@ -326,7 +326,7 @@ export default function AboutBarbershopGallery() {
             ═══════════════════════════════════════════ */}
             <div
                 ref={quote.ref}
-                className="relative z-10 pl-14 pr-6 py-12 md:pl-20 md:pr-10"
+                className="relative z-10 pl-14 pr-6 py-12 md:pl-20 md:pr-10 lg:max-w-[1280px] lg:mx-auto lg:py-16"
             >
                 {/* Dot en la línea */}
                 <div
@@ -396,7 +396,7 @@ export default function AboutBarbershopGallery() {
             ═══════════════════════════════════════════ */}
             <div
                 ref={story.ref}
-                className="relative z-10 pl-14 pr-6 pt-4 pb-20 md:pl-20 md:pr-10"
+                className="relative z-10 pl-14 pr-6 pt-4 pb-20 md:pl-20 md:pr-10 lg:max-w-[1280px] lg:mx-auto lg:pb-28"
             >
                 {/* Dot en la línea */}
                 <div
