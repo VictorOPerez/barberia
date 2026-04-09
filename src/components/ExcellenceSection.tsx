@@ -136,8 +136,9 @@ export default function ExcellenceSection() {
         if (activeVideo.readyState >= 2) {
             tryPlay();
         } else {
-            activeVideo.load();
-            activeVideo.addEventListener("loadeddata", tryPlay, { once: true });
+            // No llamar a .load() — eso resetea y re-descarga el video causando saltos.
+            // Solo esperar a que el video esté listo con canplay.
+            activeVideo.addEventListener("canplay", tryPlay, { once: true });
         }
     }, [activeIndex, sectionVisible]);
     // ─── Navegación manual ───
@@ -298,7 +299,7 @@ export default function ExcellenceSection() {
                                 muted
                                 playsInline
                                 loop
-                                preload={i === activeIndex ? "auto" : "metadata"}
+                                preload="auto"
                                 className="absolute inset-0 w-full h-full object-cover"
                                 style={{ opacity: 1 }}
                             />
