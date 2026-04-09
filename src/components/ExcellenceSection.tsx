@@ -66,14 +66,17 @@ export default function ExcellenceSection() {
     const [sectionVisible, setSectionVisible] = useState(false);
     const [cycleStarted, setCycleStarted] = useState(false);
     const sectionRef = useRef<HTMLElement>(null);
-    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const progressKeyRef = useRef(0);
     const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-    // ─── Intersection Observer ───
+    const [videoDuration, setVideoDuration] = useState(SLIDE_DURATION);
+    // ─── Intersection Observer (una sola vez, no toggle) ───
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
-                setSectionVisible(entry.isIntersecting);
+                if (entry.isIntersecting) {
+                    setSectionVisible(true);
+                    observer.disconnect();
+                }
             },
             { threshold: 0.35 }
         );
@@ -92,7 +95,7 @@ export default function ExcellenceSection() {
         }
     }, [sectionVisible, cycleStarted]);
 
-    // ─── Auto-cycle ───
+    // ─── Transición al siguiente slide ───
     const nextSlide = useCallback(() => {
         setPhase("exit");
         setTimeout(() => {
@@ -102,32 +105,45 @@ export default function ExcellenceSection() {
         }, TRANSITION_MS);
     }, []);
 
-    useEffect(() => {
-        if (!cycleStarted) return;
-        setPhase("enter");
-        timerRef.current = setInterval(nextSlide, SLIDE_DURATION);
-        return () => {
-            if (timerRef.current) clearInterval(timerRef.current);
-        };
-    }, [cycleStarted, nextSlide]);
+    // ─── Sincronizar video con slides ───
     useEffect(() => {
         const activeVideo = videoRefs.current[activeIndex];
         if (!activeVideo) return;
 
+        // Pausar y resetear todos los que NO son el activo
         videoRefs.current.forEach((video, i) => {
-            if (!video) return;
-
-            if (i !== activeIndex) {
-                video.pause();
-                video.currentTime = 0;
-            }
+            if (!video || i === activeIndex) return;
+            video.pause();
+            video.currentTime = 0;
         });
 
+        // Si la sección no es visible, pausar
         if (!sectionVisible) {
             activeVideo.pause();
             return;
         }
 
+        // Si el ciclo no ha empezado, no reproducir aún
+        if (!cycleStarted) return;
+
+        // Cuando el video termina → siguiente slide (sin loop, sin interval)
+        const handleEnded = () => nextSlide();
+        activeVideo.addEventListener("ended", handleEnded);
+
+        // Capturar duración real del video para la barra de progreso
+        if (activeVideo.duration && isFinite(activeVideo.duration)) {
+            setVideoDuration(activeVideo.duration * 1000);
+        } else {
+            const handleMeta = () => {
+                if (activeVideo.duration && isFinite(activeVideo.duration)) {
+                    setVideoDuration(activeVideo.duration * 1000);
+                }
+            };
+            activeVideo.addEventListener("loadedmetadata", handleMeta, { once: true });
+        }
+
+        // Reproducir desde el inicio
+        activeVideo.currentTime = 0;
         const tryPlay = () => {
             const p = activeVideo.play();
             if (p) p.catch(() => { });
@@ -136,21 +152,24 @@ export default function ExcellenceSection() {
         if (activeVideo.readyState >= 2) {
             tryPlay();
         } else {
-            // No llamar a .load() — eso resetea y re-descarga el video causando saltos.
-            // Solo esperar a que el video esté listo con canplay.
             activeVideo.addEventListener("canplay", tryPlay, { once: true });
         }
-    }, [activeIndex, sectionVisible]);
+
+        return () => {
+            activeVideo.removeEventListener("ended", handleEnded);
+        };
+    }, [activeIndex, sectionVisible, cycleStarted, nextSlide]);
     // ─── Navegación manual ───
     const goTo = (i: number) => {
         if (i === activeIndex) return;
-        if (timerRef.current) clearInterval(timerRef.current);
+        // Pausar video actual para que no dispare "ended" durante la transición
+        const currentVideo = videoRefs.current[activeIndex];
+        if (currentVideo) currentVideo.pause();
         setPhase("exit");
         setTimeout(() => {
             setActiveIndex(i);
             progressKeyRef.current += 1;
             setPhase("enter");
-            timerRef.current = setInterval(nextSlide, SLIDE_DURATION);
         }, TRANSITION_MS);
     };
 
@@ -250,8 +269,8 @@ export default function ExcellenceSection() {
                 style={{
                     opacity: cycleStarted ? 1 : 0,
                     transform: cycleStarted
-                        ? "translateY(0) scale(1)"
-                        : "translateY(20px) scale(0.97)",
+                        ? "translateY(0)"
+                        : "translateY(20px)",
                     transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
                     transitionDelay: "200ms",
                 }}
@@ -298,7 +317,6 @@ export default function ExcellenceSection() {
                                 src={f.videoSrc}
                                 muted
                                 playsInline
-                                loop
                                 preload="auto"
                                 className="absolute inset-0 w-full h-full object-cover"
                                 style={{ opacity: 1 }}
@@ -507,7 +525,7 @@ export default function ExcellenceSection() {
                                     className="absolute inset-y-0 left-0 rounded-full bg-[#ff5500]"
                                     style={{
                                         boxShadow: "0 0 6px rgba(255,85,0,0.4)",
-                                        animation: `excellenceProgress ${SLIDE_DURATION}ms linear forwards`,
+                                        animation: `excellenceProgress ${videoDuration}ms linear forwards`,
                                     }}
                                 />
                             )}

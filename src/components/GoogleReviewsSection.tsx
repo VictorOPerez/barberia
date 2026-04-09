@@ -306,8 +306,8 @@ export default function GoogleReviewsSection() {
                     transitionDelay: "300ms",
                     /* Rotación sutil para efecto diagonal */
                     transform: visible
-                        ? "rotate(-3deg) scale(1)"
-                        : "rotate(-3deg) scale(0.95)",
+                        ? "rotate(-3deg)"
+                        : "rotate(-3deg) translateY(20px)",
                 }}
             >
                 {/* Gradientes de fade en los bordes */}

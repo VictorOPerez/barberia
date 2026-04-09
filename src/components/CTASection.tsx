@@ -163,7 +163,7 @@ export default function CTASection() {
                     className="mb-10 transition-all duration-1000"
                     style={{
                         opacity: visible ? 1 : 0,
-                        transform: visible ? "translateY(0) scale(1)" : "translateY(16px) scale(0.95)",
+                        transform: visible ? "translateY(0)" : "translateY(16px)",
                         transitionDelay: "300ms",
                     }}
                 >
