@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useIframeMode } from "@/hooks/useIframeMode";
 // import Image from "next/image"; // Uncomment when using real images
 
 interface Haircut {
@@ -192,6 +193,7 @@ const CARD_GAP = 16;
 const CARD_STEP = CARD_W + CARD_GAP;
 
 export default function BarberCarousel() {
+  const isIframe = useIframeMode();
   const [idx, setIdx] = useState(3);
   const [descKey, setDescKey] = useState(0);
   const [bgKey, setBgKey] = useState(0);
@@ -230,9 +232,9 @@ export default function BarberCarousel() {
     <section
       className="relative w-full overflow-hidden select-none flex flex-col"
       style={{
-        height: "100vh",
+        height: isIframe ? 812 : "100vh",
         minHeight: 600,
-        maxHeight: 780,
+        maxHeight: isIframe ? 812 : 780,
         fontFamily: "'Georgia', serif",
         background: "#050505",
       }}

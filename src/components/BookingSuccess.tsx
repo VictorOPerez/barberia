@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { CalendarPlus, Check, Home, MapPin } from 'lucide-react';
 import { Inter, Permanent_Marker } from 'next/font/google';
+import { useIframeMode } from '@/hooks/useIframeMode';
 
 const inter = Inter({
     subsets: ['latin'],
@@ -39,8 +40,9 @@ export default function BookingSuccess({
     onGoHome,
     bookingData = defaultBooking,
 }: BookingSuccessProps) {
+    const isIframe = useIframeMode();
     return (
-        <section className={`${inter.variable} ${marker.variable} relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-[#121212] text-white px-4`}>
+        <section className={`${inter.variable} ${marker.variable} relative flex ${isIframe ? 'min-h-[812px]' : 'min-h-[100svh]'} flex-col items-center justify-center overflow-hidden bg-[#121212] text-white px-4`}>
 
             {/* Efectos de fondo */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,87,34,0.15),transparent_50%),linear-gradient(180deg,#0f0f0f_0%,#121212_100%)] pointer-events-none" />

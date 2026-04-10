@@ -5,15 +5,17 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Scissors } from 'lucide-react';
 import { Inter, Permanent_Marker } from 'next/font/google';
+import { useIframeMode } from '@/hooks/useIframeMode';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const marker = Permanent_Marker({ weight: '400', subsets: ['latin'], variable: '--font-marker' });
 
 export default function BarberHero() {
+  const isIframe = useIframeMode();
   return (
-    <section className={`${inter.variable} ${marker.variable} relative min-h-[100dvh] w-full overflow-hidden bg-[#121212] text-white lg:px-6 lg:pt-24 lg:pb-10`}>
+    <section className={`${inter.variable} ${marker.variable} relative ${isIframe ? 'min-h-[812px]' : 'min-h-[100dvh]'} w-full overflow-hidden bg-[#121212] text-white lg:px-6 lg:pt-24 lg:pb-10`}>
       <div className="lg:hidden">
-        <div className="relative h-[35dvh] w-full overflow-hidden leading-[0] sm:h-[75vh]">
+        <div className={`relative ${isIframe ? 'h-[284px] sm:h-[609px]' : 'h-[35dvh] sm:h-[75vh]'} w-full overflow-hidden leading-[0]`}>
           <video
             src="/hero/logo.mp4"
             autoPlay

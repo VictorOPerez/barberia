@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useIframeMode } from '@/hooks/useIframeMode';
 
 // --- TIPOS Y DATOS ---
 type Haircut = {
@@ -63,6 +64,7 @@ const springTransition = {
 };
 
 export default function AnimatedServicesMenu() {
+    const isIframe = useIframeMode();
     const [activeIndex, setActiveIndex] = useState(0); // Empezamos en 'CLÁSICOS'
     const [activeItemIndex, setActiveItemIndex] = useState(0); // Controla qué ítem se muestra en el detalle inferior
 
@@ -76,7 +78,7 @@ export default function AnimatedServicesMenu() {
     };
 
     return (
-        <section className="relative w-full h-screen bg-[#111] overflow-hidden text-white font-sans flex flex-col py-10">
+        <section className={`relative w-full ${isIframe ? 'h-[812px]' : 'h-screen'} bg-[#111] overflow-hidden text-white font-sans flex flex-col py-10`}>
 
             {/* Fondo decorativo opcional */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] z-0" />

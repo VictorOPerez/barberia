@@ -8,6 +8,7 @@ import {
     useRef,
     useLayoutEffect,
 } from "react";
+import { useIframeMode } from "@/hooks/useIframeMode";
 import { Bebas_Neue, Permanent_Marker } from "next/font/google";
 import Link from "next/link";
 interface Haircut {
@@ -88,6 +89,7 @@ interface AnimState {
 }
 
 export default function BarberCarousel() {
+    const isIframe = useIframeMode();
     const [bgIndex, setBgIndex] = useState(0);
     const [stripIndex, setStripIndex] = useState(0);
     const [anim, setAnim] = useState<AnimState>({
@@ -278,10 +280,10 @@ export default function BarberCarousel() {
         // DISEÑO RESPONSIVE Y VARIABLES CSS
         <section id="services"
             ref={rootRef}
-            className="relative flex min-h-[100svh] md:h-svh md:min-h-[700px] w-full flex-col overflow-hidden bg-black font-sans select-none lg:max-w-[1180px] lg:mx-auto lg:rounded-[36px]
-            [--card-w:180px] [--card-h:270px] [--card-gap:14px] [--anchor:10vw] 
+            className={`relative flex ${isIframe ? 'min-h-[812px] md:h-[812px]' : 'min-h-[100svh] md:h-svh'} md:min-h-[700px] w-full flex-col overflow-hidden bg-black font-sans select-none lg:max-w-[1180px] lg:mx-auto lg:rounded-[36px]
+            [--card-w:180px] [--card-h:270px] [--card-gap:14px] [--anchor:10vw]
             md:[--card-w:220px] md:[--card-h:330px] md:[--card-gap:20px] md:[--anchor:52vw]
-            [--accent-orange:#FF6A2A]"
+            [--accent-orange:#FF6A2A]`}
             style={{ overflowAnchor: "none" }}
         >
 

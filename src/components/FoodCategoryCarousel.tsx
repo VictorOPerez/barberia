@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useIframeMode } from "@/hooks/useIframeMode";
 
 interface FoodItem {
   name: string;
@@ -67,6 +68,7 @@ const CARD_GAP = 16;
 const CARD_STEP = CARD_W + CARD_GAP;
 
 export default function FoodCategoryCarousel() {
+  const isIframe = useIframeMode();
   const [idx, setIdx] = useState(2);
   const [dir, setDir] = useState(1);
   const [descKey, setDescKey] = useState(0);
@@ -109,9 +111,9 @@ export default function FoodCategoryCarousel() {
       style={{
         position: "relative",
         width: "100%",
-        height: "100dvh",
+        height: isIframe ? 812 : "100dvh",
         minHeight: 580,
-        maxHeight: 750,
+        maxHeight: isIframe ? 812 : 750,
         overflow: "hidden",
         background: "#0a0a0a",
         fontFamily: "'Georgia', serif",

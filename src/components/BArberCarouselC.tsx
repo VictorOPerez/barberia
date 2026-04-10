@@ -8,6 +8,7 @@ import {
     useRef,
     type CSSProperties,
 } from "react";
+import { useIframeMode } from "@/hooks/useIframeMode";
 
 interface Haircut {
     id: string;
@@ -215,6 +216,7 @@ type PromotionClone = {
 };
 
 export default function BarberCarousel() {
+    const isIframe = useIframeMode();
     const rootRef = useRef<HTMLDivElement | null>(null);
     const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
     const promoteTimerRef = useRef<number | null>(null);
@@ -313,9 +315,9 @@ export default function BarberCarousel() {
             ref={rootRef}
             className="relative flex w-full select-none flex-col overflow-hidden"
             style={{
-                height: "100vh",
+                height: isIframe ? 812 : "100vh",
                 minHeight: 600,
-                maxHeight: 780,
+                maxHeight: isIframe ? 812 : 780,
                 fontFamily: "'Georgia', serif",
                 background: "#050505",
             }}

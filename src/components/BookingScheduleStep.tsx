@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Clock3, Scissors, CalendarDays, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Inter, Permanent_Marker } from 'next/font/google';
 import { useRouter } from 'next/navigation';
+import { useIframeMode } from '@/hooks/useIframeMode';
 
 const inter = Inter({
     subsets: ['latin'],
@@ -119,6 +120,7 @@ export default function BookingScheduleStep({
     onBack,
     onConfirm,
 }: any) {
+    const isIframe = useIframeMode();
     // 1. SOLUCIÓN AL HYDRATION: El estado empieza vacío o con datos de mock seguros
     const [days, setDays] = useState<DayItem[]>([]);
     const [selectedDay, setSelectedDay] = useState<string>('');
@@ -213,15 +215,15 @@ export default function BookingScheduleStep({
 
     // Para evitar destellos feos mientras se hidrata, mostramos un skeleton básico si no hay días
     if (days.length === 0) {
-        return <div className="min-h-[100dvh] bg-[#121212]"></div>;
+        return <div className={`${isIframe ? 'min-h-[812px]' : 'min-h-[100dvh]'} bg-[#121212]`}></div>;
     }
 
     return (
-        <section className={`${inter.variable} ${marker.variable} relative h-[100dvh] bg-[#121212] text-white overflow-hidden flex flex-col`}>
+        <section className={`${inter.variable} ${marker.variable} relative ${isIframe ? 'h-[812px]' : 'h-[100dvh]'} bg-[#121212] text-white overflow-hidden flex flex-col`}>
             {/* Efectos de fondo */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,87,34,0.12),transparent_40%),linear-gradient(180deg,#0f0f0f_0%,#121212_100%)] pointer-events-none" />
 
-            <div className="relative mx-auto flex h-[calc(100dvh-140px)] w-full max-w-[430px] flex-col justify-evenly px-4 pt-2 ">
+            <div className={`relative mx-auto flex ${isIframe ? 'h-[672px]' : 'h-[calc(100dvh-140px)]'} w-full max-w-[430px] flex-col justify-evenly px-4 pt-2 `}>
 
                 {/* Navbar */}
                 <div className="flex items-center justify-between ">

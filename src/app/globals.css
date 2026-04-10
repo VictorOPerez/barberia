@@ -25,34 +25,3 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Iframe mode: cap viewport-height units to mobile size (812px) */
-html.in-iframe {
-  --iframe-vh: 812px;
-}
-/* Tailwind utility classes */
-html.in-iframe .h-screen {
-  height: var(--iframe-vh) !important;
-}
-html.in-iframe .min-h-screen {
-  min-height: var(--iframe-vh) !important;
-}
-/* Tailwind arbitrary value classes: min-h-[100dvh], h-[100dvh], h-[100vh], min-h-[100vh] */
-html.in-iframe .min-h-\[100dvh\] {
-  min-height: var(--iframe-vh) !important;
-}
-html.in-iframe .h-\[100dvh\] {
-  height: var(--iframe-vh) !important;
-}
-html.in-iframe .min-h-\[100vh\] {
-  min-height: var(--iframe-vh) !important;
-}
-html.in-iframe .h-\[100vh\] {
-  height: var(--iframe-vh) !important;
-}
-/* Inline styles with 100vh/100dvh */
-html.in-iframe [style*="100vh"] {
-  height: var(--iframe-vh) !important;
-}
-html.in-iframe [style*="100dvh"] {
-  height: var(--iframe-vh) !important;
-}

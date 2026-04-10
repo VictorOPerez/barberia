@@ -9,6 +9,7 @@ import {
     Scissors,
 } from 'lucide-react';
 import { Inter, Permanent_Marker } from 'next/font/google';
+import { useIframeMode } from '@/hooks/useIframeMode';
 
 const inter = Inter({
     subsets: ['latin'],
@@ -164,6 +165,7 @@ function getRelativePosition(index: number, currentIndex: number, total: number)
 }
 
 export default function BookingCutStep({ onContinue }: BookingCutStepProps) {
+    const isIframe = useIframeMode();
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const selectedCut = useMemo(() => cuts[currentIndex], [currentIndex]);
@@ -182,14 +184,14 @@ export default function BookingCutStep({ onContinue }: BookingCutStepProps) {
 
     return (
         <section
-            className={`${inter.variable} ${marker.variable} relative h-[100svh] overflow-hidden bg-[#121212] text-white`}
+            className={`${inter.variable} ${marker.variable} relative ${isIframe ? 'h-[812px]' : 'h-[100svh]'} overflow-hidden bg-[#121212] text-white`}
         >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,87,34,0.16),transparent_34%),linear-gradient(180deg,#0f0f0f_0%,#121212_50%,#0d0d0d_100%)]" />
             <div className="absolute inset-0 opacity-[0.06] [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:46px_46px]" />
             <div className="absolute left-[-70px] top-24 h-48 w-48 rounded-full bg-[#FF5722]/15 blur-3xl" />
             <div className="absolute right-[-90px] top-44 h-56 w-56 rounded-full bg-[#FF5722]/10 blur-3xl" />
 
-            <div className="relative mx-auto flex h-[100svh] w-full max-w-[430px] flex-col overflow-hidden  pb-4 pt-3">
+            <div className={`relative mx-auto flex ${isIframe ? 'h-[812px]' : 'h-[100svh]'} w-full max-w-[430px] flex-col overflow-hidden  pb-4 pt-3`}>
                 <div className="mb-3 flex items-center justify-between h-9 px-4">
                     <div>
 
